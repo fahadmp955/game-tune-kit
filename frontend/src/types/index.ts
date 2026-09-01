@@ -243,3 +243,36 @@ export interface EconomyInflationOutputs {
   stateRating: string;
 }
 
+// 13. Source / Sink Balance Types
+export interface SourceSinkInputs { dailySources: number; dailySinks: number; }
+export interface SourceSinkOutputs { netBalance: number; ratio: number; balanceState: string; }
+
+// 15. Pity System Types
+export interface PityInputs { baseRatePercent: number; softPityPull: number; hardPityPull: number; }
+export interface PityOutputs { expectedPullsWithPity: number; hardPityCap: number; effectiveRate: number; }
+
+// 16. Gacha Cost Types
+export interface GachaCostInputs { pullsRequired: number; gemCostPerPull: number; usdCostPer1000Gems: number; }
+export interface GachaCostOutputs { totalGemsNeeded: number; totalUsdCost: number; }
+
+// 17. XP Curve Types
+export interface XpCurveInputs { maxLevel: number; baseLevelXp: number; exponentMultiplier: number; }
+export interface XpCurveOutputs { maxLevel: number; totalCumulativeXp: number; curveData: { level: number; xpRequired: number; cumulativeXp: number }[]; }
+
+// 18. Reward Value Types
+export interface RewardValueInputs { rewardItemGemsValue: number; rewardCount: number; }
+export interface RewardValueOutputs { totalEconomyValue: number; }
+
+// 20. Battle Pass Types
+export interface BattlePassInputs { totalTiers: number; xpPerTier: number; dailyFreeXp: number; }
+export interface BattlePassOutputs { totalTiers: number; totalXpRequired: number; daysRequired: number; }
+
+// 21. Energy System Types
+export interface EnergySystemInputs { maxEnergyCap: number; regenMinutesPerUnit: number; energyPerSession: number; }
+export interface EnergySystemOutputs { totalMinutesToFullRegen: number; fullRegenHours: number; maxSessionsPerFullCap: number; }
+
+// 23. Ad Revenue Types
+export interface AdRevenueInputs { dau: number; impressionsPerUser: number; fillRatePercent: number; ecpmUsd: number; }
+export interface AdRevenueOutputs { dailyAdRevenue: number; monthlyAdRevenue: number; }
+
+
