@@ -1,0 +1,26 @@
+# GameTuneKit — Next Calculator Set
+
+Implementation-ready Layer-0 PRDs + Codex prompts for the remaining catalogue utilities not already covered by the TGS-derived set.
+
+- [02_ROAS_Calculator_PRD_Codex](02_ROAS_Calculator_PRD_Codex.md)
+- [03_Break_even_CPI_Calculator_PRD_Codex](03_Break_even_CPI_Calculator_PRD_Codex.md)
+- [07_ARPDAU___ARPPU_Calculator_PRD_Codex](07_ARPDAU___ARPPU_Calculator_PRD_Codex.md)
+- [08_PPP_Price_Calculator_PRD_Codex](08_PPP_Price_Calculator_PRD_Codex.md)
+- [09_IAP_Pack_Value_Calculator_PRD_Codex](09_IAP_Pack_Value_Calculator_PRD_Codex.md)
+- [10_Currency_Exchange_Calculator_PRD_Codex](10_Currency_Exchange_Calculator_PRD_Codex.md)
+- [12_Economy_Inflation_Calculator_PRD_Codex](12_Economy_Inflation_Calculator_PRD_Codex.md)
+- [13_Source___Sink_Calculator_PRD_Codex](13_Source___Sink_Calculator_PRD_Codex.md)
+- [14_Loot___Drop_rate_Calculator_PRD_Codex](14_Loot___Drop_rate_Calculator_PRD_Codex.md)
+- [15_Pity_System_Calculator_PRD_Codex](15_Pity_System_Calculator_PRD_Codex.md)
+- [16_Gacha_Cost_Calculator_PRD_Codex](16_Gacha_Cost_Calculator_PRD_Codex.md)
+- [17_XP___Progression_Curve_Generator_PRD_Codex](17_XP___Progression_Curve_Generator_PRD_Codex.md)
+- [18_Reward_Value_Calculator_PRD_Codex](18_Reward_Value_Calculator_PRD_Codex.md)
+- [20_Battle_Pass_Calculator_PRD_Codex](20_Battle_Pass_Calculator_PRD_Codex.md)
+- [21_Energy_System_Calculator_PRD_Codex](21_Energy_System_Calculator_PRD_Codex.md)
+- [23_Ad_Revenue_Calculator_PRD_Codex](23_Ad_Revenue_Calculator_PRD_Codex.md)
+- [27_A_B_Test_Sample_Size_Calculator_PRD_Codex](27_A_B_Test_Sample_Size_Calculator_PRD_Codex.md)
+- [32_DAU___MAU_Stickiness_Calculator_PRD_Codex](32_DAU___MAU_Stickiness_Calculator_PRD_Codex.md)
+- [33_Churn_Calculator_PRD_Codex](33_Churn_Calculator_PRD_Codex.md)
+- [34_Soft_launch_Scorecard_PRD_Codex](34_Soft_launch_Scorecard_PRD_Codex.md)
+- [35_LiveOps_Cadence_Calculator_PRD_Codex](35_LiveOps_Cadence_Calculator_PRD_Codex.md)
+- [36_Offer_Discount_Calculator_PRD_Codex](36_Offer_Discount_Calculator_PRD_Codex.md)
