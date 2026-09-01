@@ -24,6 +24,12 @@ import { RewardValueCalculatorView } from '../components/utilities/RewardValueCa
 import { BattlePassCalculatorView } from '../components/utilities/BattlePassCalculatorView';
 import { EnergySystemCalculatorView } from '../components/utilities/EnergySystemCalculatorView';
 import { AdRevenueCalculatorView } from '../components/utilities/AdRevenueCalculatorView';
+import { ChurnCalculatorView } from '../components/utilities/ChurnCalculatorView';
+import { SoftLaunchScorecardCalculatorView } from '../components/utilities/SoftLaunchScorecardCalculatorView';
+import { LiveOpsCadenceCalculatorView } from '../components/utilities/LiveOpsCadenceCalculatorView';
+import { WhaleSpendCeilingCalculatorView } from '../components/utilities/WhaleSpendCeilingCalculatorView';
+import { AdVsIapCannibalisationCalculatorView } from '../components/utilities/AdVsIapCannibalisationCalculatorView';
+import { SubscriptionFunnelCalculatorView } from '../components/utilities/SubscriptionFunnelCalculatorView';
 import { Share2, ArrowLeft } from 'lucide-react';
 
 interface UtilityPageProps {
@@ -97,6 +103,18 @@ export const UtilityPage: React.FC<UtilityPageProps> = ({ utilityId, onBackToCat
         return { name: 'Energy System Calculator', code: '21', family: 'Economy & Systems' };
       case '23-ad-revenue-calculator':
         return { name: 'Ad Revenue Calculator', code: '23', family: 'Growth / UA' };
+      case '33-churn-calculator':
+        return { name: 'Churn Calculator', code: '33', family: 'Intelligence' };
+      case '34-soft-launch-scorecard':
+        return { name: 'Soft-Launch Scorecard', code: '34', family: 'Intelligence' };
+      case '35-liveops-cadence-calculator':
+        return { name: 'LiveOps Cadence Calculator', code: '35', family: 'LiveOps' };
+      case '11-whale-spend-ceiling':
+        return { name: 'Whale Spend Ceiling', code: '11', family: 'Monetisation' };
+      case '22-ad-vs-iap-cannibalisation':
+        return { name: 'Ad vs IAP Cannibalisation', code: '22', family: 'Monetisation' };
+      case '26-subscription-funnel':
+        return { name: 'Subscription Paywall & Trial Funnel', code: '26', family: 'Monetisation' };
       default:
         return { name: 'Calculator Utility', code: '00', family: 'General' };
     }
@@ -150,6 +168,18 @@ export const UtilityPage: React.FC<UtilityPageProps> = ({ utilityId, onBackToCat
         return <EnergySystemCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
       case '23-ad-revenue-calculator':
         return <AdRevenueCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '33-churn-calculator':
+        return <ChurnCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '34-soft-launch-scorecard':
+        return <SoftLaunchScorecardCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '35-liveops-cadence-calculator':
+        return <LiveOpsCadenceCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '11-whale-spend-ceiling':
+        return <WhaleSpendCeilingCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '22-ad-vs-iap-cannibalisation':
+        return <AdVsIapCannibalisationCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '26-subscription-funnel':
+        return <SubscriptionFunnelCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
       default:
         return <div>Utility not found</div>;
     }
