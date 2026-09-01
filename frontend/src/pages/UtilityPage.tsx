@@ -8,6 +8,14 @@ import { StickinessCalculatorView } from '../components/utilities/StickinessCalc
 import { LootCalculatorView } from '../components/utilities/LootCalculatorView';
 import { OfferCalculatorView } from '../components/utilities/OfferCalculatorView';
 import { AbTestCalculatorView } from '../components/utilities/AbTestCalculatorView';
+import { CpiCalculatorView } from '../components/utilities/CpiCalculatorView';
+import { LtvCacCalculatorView } from '../components/utilities/LtvCacCalculatorView';
+import { UaPaybackCalculatorView } from '../components/utilities/UaPaybackCalculatorView';
+import { ArpdauCalculatorView } from '../components/utilities/ArpdauCalculatorView';
+import { PppCalculatorView } from '../components/utilities/PppCalculatorView';
+import { PackValueCalculatorView } from '../components/utilities/PackValueCalculatorView';
+import { CurrencyExchangeCalculatorView } from '../components/utilities/CurrencyExchangeCalculatorView';
+import { EconomyInflationCalculatorView } from '../components/utilities/EconomyInflationCalculatorView';
 import { Share2, ArrowLeft } from 'lucide-react';
 
 interface UtilityPageProps {
@@ -49,6 +57,22 @@ export const UtilityPage: React.FC<UtilityPageProps> = ({ utilityId, onBackToCat
         return { name: 'Offer & Bundle Discount Calculator', code: '36', family: 'LiveOps' };
       case '27-ab-test-calculator':
         return { name: 'A/B Test Sample Size Calculator', code: '27', family: 'Data & A/B' };
+      case '03-cpi-calculator':
+        return { name: 'Break-even CPI Calculator', code: '03', family: 'Growth / UA' };
+      case '05-ltv-cac-calculator':
+        return { name: 'LTV to CAC & Cash Runway', code: '05', family: 'Growth / UA' };
+      case '04-ua-payback-calculator':
+        return { name: 'UA Payback Economics', code: '04', family: 'Growth / UA' };
+      case '07-arpdau-calculator':
+        return { name: 'ARPDAU / ARPPU Calculator', code: '07', family: 'Monetisation' };
+      case '08-ppp-calculator':
+        return { name: 'PPP Regional Price Calculator', code: '08', family: 'Monetisation' };
+      case '09-pack-value-calculator':
+        return { name: 'IAP Pack Value Calculator', code: '09', family: 'Monetisation' };
+      case '10-currency-exchange-calculator':
+        return { name: 'Currency Exchange Calculator', code: '10', family: 'Economy & Systems' };
+      case '12-economy-inflation-calculator':
+        return { name: 'Economy Inflation Calculator', code: '12', family: 'Economy & Systems' };
       default:
         return { name: 'Calculator Utility', code: '00', family: 'General' };
     }
@@ -70,6 +94,22 @@ export const UtilityPage: React.FC<UtilityPageProps> = ({ utilityId, onBackToCat
         return <OfferCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
       case '27-ab-test-calculator':
         return <AbTestCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '03-cpi-calculator':
+        return <CpiCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '05-ltv-cac-calculator':
+        return <LtvCacCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '04-ua-payback-calculator':
+        return <UaPaybackCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '07-arpdau-calculator':
+        return <ArpdauCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '08-ppp-calculator':
+        return <PppCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '09-pack-value-calculator':
+        return <PackValueCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '10-currency-exchange-calculator':
+        return <CurrencyExchangeCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '12-economy-inflation-calculator':
+        return <EconomyInflationCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
       default:
         return <div>Utility not found</div>;
     }

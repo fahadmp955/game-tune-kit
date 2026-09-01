@@ -137,3 +137,109 @@ export interface AbTestOutputs {
   absoluteMde: number; // e.g. +0.5%
   feasibilityRating: 'Feasible Fast (< 7 days)' | 'Standard Run (7-14 days)' | 'High Traffic Needed (> 30 days)';
 }
+
+// 03. Break-even CPI Calculator Types
+export interface CpiInputs {
+  targetD30Ltv: number;
+  targetMarginPercent: number;
+  organicKFactor: number;
+}
+export interface CpiOutputs {
+  maxSustainableCpi: number;
+  totalEffectiveLtv: number;
+  profitMarginPerInstall: number;
+  bidRecommendationTier: string;
+}
+
+// 05. LTV to CAC & Cash Runway Types
+export interface LtvCacInputs {
+  ltvValue: number;
+  cacValue: number;
+  monthlyBurnRate: number;
+  cashReserve: number;
+}
+export interface LtvCacOutputs {
+  ltvCacRatio: number;
+  netProfitPerUser: number;
+  runwayMonths: number;
+  healthStatus: 'Healthy (3x+)' | 'Viable (1.5x-3x)' | 'Unsustainable (< 1.5x)';
+}
+
+// 04. UA Payback Economics Types
+export interface UaPaybackInputs {
+  totalAdSpend: number;
+  d1Revenue: number;
+  d7Revenue: number;
+  d30Revenue: number;
+}
+export interface UaPaybackOutputs {
+  d1PaybackPercent: number;
+  d7PaybackPercent: number;
+  d30PaybackPercent: number;
+  estimatedDaysToPayback: number;
+  paybackPace: string;
+}
+
+// 07. ARPDAU / ARPPU Types
+export interface ArpdauInputs {
+  dau: number;
+  dailyRevenue: number;
+  payingUsers: number;
+}
+export interface ArpdauOutputs {
+  arpdau: number;
+  arppu: number;
+  payerConversionRate: number;
+  monetisationHealth: string;
+}
+
+// 08. PPP Regional Price Types
+export interface PppInputs {
+  baseUsdPrice: number;
+  targetCountryPppMultiplier: number;
+}
+export interface PppOutputs {
+  suggestedTierPrice: number;
+  rawRegionalPrice: number;
+  effectiveDiscountVsUsd: number;
+  pricingTierCategory: string;
+}
+
+// 09. IAP Pack Value Types
+export interface PackValueInputs {
+  packUsdPrice: number;
+  baseGemsAmount: number;
+  bonusGemsPercent: number;
+}
+export interface PackValueOutputs {
+  totalGems: number;
+  effectiveGemsPerDollar: number;
+  costPerGemUsd: number;
+  valueEfficiencyRating: string;
+}
+
+// 10. Currency Exchange Types
+export interface CurrencyExchangeInputs {
+  realMoneyUsd: number;
+  usdToHardRatio: number;
+  hardToSoftRatio: number;
+}
+export interface CurrencyExchangeOutputs {
+  hardCurrencyEquivalent: number;
+  softCurrencyEquivalent: number;
+  softPerUsd: number;
+}
+
+// 12. Economy Inflation Types
+export interface EconomyInflationInputs {
+  dailyCurrencyGenerated: number;
+  dailyCurrencyBurned: number;
+  currentCirculatingSupply: number;
+}
+export interface EconomyInflationOutputs {
+  netDailyDelta: number;
+  netDailyInflationRate: number;
+  projected30DaySupply: number;
+  stateRating: string;
+}
+
