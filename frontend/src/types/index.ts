@@ -299,5 +299,38 @@ export interface AdVsIapCannibalisationOutputs { cannibalisationImpactPercent: n
 export interface SubscriptionFunnelInputs { monthlySubscriptionPrice: number; trialToPaidConversionPercent: number; monthlyChurnPercent: number; }
 export interface SubscriptionFunnelOutputs { subscriberLtv: number; subscriberActiveMonths: number; }
 
+// 30 / 07B. K-Factor Types
+export interface KFactorInputs { paidInstalls: number; organicSpillageInstalls: number; }
+export interface KFactorOutputs { kFactor: number; totalEffectiveInstalls: number; effectiveCpiDiscountPercent: number; }
+
+// 31 / 08B. ATT Dilution Types
+export interface AttDilutionInputs { attOptInRatePercent: number; unattributedUaSpendPercent: number; }
+export interface AttDilutionOutputs { signalDilutionPercent: number; estimatedUaEfficiencyLossPercent: number; }
+
+// 24 / 09B. Ad Yield Optimizer Types
+export interface AdYieldOptimizerInputs { currentEcpm: number; optimizedEcpm: number; dailyImpressions: number; }
+export interface AdYieldOptimizerOutputs { currentDailyYield: number; optimizedDailyYield: number; dailyUpliftUsd: number; }
+
+// 25 / 10B. Mediation Latency Types
+export interface MediationLatencyInputs { waterfallLatencyMs: number; dropOffRatePer100ms: number; dailyAdRequests: number; ecpm: number; }
+export interface MediationLatencyOutputs { totalDropOffPercent: number; lostImpressions: number; dailyYieldLeakageUsd: number; }
+
+// 29 / 11B. KPI Tree Leverage Types
+export interface KpiTreeInputs { dau: number; arpdau: number; retentionImprovementPercent: number; }
+export interface KpiTreeOutputs { currentDailyRevenue: number; projectedDailyRevenue: number; revenueUpliftUsd: number; }
+
+// 28 / 12B. Whale A/B Test Types
+export interface WhaleAbTestInputs { sampleSizePerVariant: number; whaleOutlierCount: number; whaleArpuDiffPercent: number; }
+export interface WhaleAbTestOutputs { outlierFrequencyPercent: number; skewImpactRating: string; }
+
+// 06 / 13B. Retention Benchmark Types
+export interface RetentionBenchmarkInputs { observedD1: number; observedD7: number; genreD1Benchmark: number; genreD7Benchmark: number; }
+export interface RetentionBenchmarkOutputs { d1Gap: number; d7Gap: number; performanceTier: string; }
+
+// 19 / 14B. LiveOps Season Impact Types
+export interface LiveOpsSeasonImpactInputs { baselineMonthlyRevenue: number; seasonUpliftPercent: number; seasonDurationWeeks: number; }
+export interface LiveOpsSeasonImpactOutputs { incrementalSeasonRevenueUsd: number; totalSeasonRevenueUsd: number; }
+
+
 
 

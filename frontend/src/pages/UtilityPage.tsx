@@ -30,6 +30,14 @@ import { LiveOpsCadenceCalculatorView } from '../components/utilities/LiveOpsCad
 import { WhaleSpendCeilingCalculatorView } from '../components/utilities/WhaleSpendCeilingCalculatorView';
 import { AdVsIapCannibalisationCalculatorView } from '../components/utilities/AdVsIapCannibalisationCalculatorView';
 import { SubscriptionFunnelCalculatorView } from '../components/utilities/SubscriptionFunnelCalculatorView';
+import { KFactorCalculatorView } from '../components/utilities/KFactorCalculatorView';
+import { AttDilutionCalculatorView } from '../components/utilities/AttDilutionCalculatorView';
+import { AdYieldOptimizerCalculatorView } from '../components/utilities/AdYieldOptimizerCalculatorView';
+import { MediationLatencyCalculatorView } from '../components/utilities/MediationLatencyCalculatorView';
+import { KpiTreeCalculatorView } from '../components/utilities/KpiTreeCalculatorView';
+import { WhaleAbTestCalculatorView } from '../components/utilities/WhaleAbTestCalculatorView';
+import { RetentionBenchmarkCalculatorView } from '../components/utilities/RetentionBenchmarkCalculatorView';
+import { LiveOpsSeasonImpactCalculatorView } from '../components/utilities/LiveOpsSeasonImpactCalculatorView';
 import { Share2, ArrowLeft } from 'lucide-react';
 
 interface UtilityPageProps {
@@ -115,6 +123,22 @@ export const UtilityPage: React.FC<UtilityPageProps> = ({ utilityId, onBackToCat
         return { name: 'Ad vs IAP Cannibalisation', code: '22', family: 'Monetisation' };
       case '26-subscription-funnel':
         return { name: 'Subscription Paywall & Trial Funnel', code: '26', family: 'Monetisation' };
+      case '30-k-factor-calculator':
+        return { name: 'Paid to Organic K-Factor Spillage', code: '30', family: 'Growth / UA' };
+      case '31-att-dilution-calculator':
+        return { name: 'ATT Privacy Signal Dilution', code: '31', family: 'Growth / UA' };
+      case '24-ad-yield-optimizer':
+        return { name: 'Ad Revenue Yield Optimizer', code: '24', family: 'Growth / UA' };
+      case '25-mediation-latency-calculator':
+        return { name: 'Mediation Latency Yield Leakage', code: '25', family: 'Growth / UA' };
+      case '29-kpi-tree-calculator':
+        return { name: 'KPI Tree Leverage Calculator', code: '29', family: 'Intelligence' };
+      case '28-whale-ab-test-calculator':
+        return { name: 'Whale-Skewed A/B Test', code: '28', family: 'Data & A/B' };
+      case '06-retention-benchmark-calculator':
+        return { name: 'Retention Curve Benchmark', code: '06', family: 'Intelligence' };
+      case '19-liveops-season-impact':
+        return { name: 'LiveOps Event Season Impact', code: '19', family: 'LiveOps' };
       default:
         return { name: 'Calculator Utility', code: '00', family: 'General' };
     }
@@ -180,6 +204,22 @@ export const UtilityPage: React.FC<UtilityPageProps> = ({ utilityId, onBackToCat
         return <AdVsIapCannibalisationCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
       case '26-subscription-funnel':
         return <SubscriptionFunnelCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '30-k-factor-calculator':
+        return <KFactorCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '31-att-dilution-calculator':
+        return <AttDilutionCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '24-ad-yield-optimizer':
+        return <AdYieldOptimizerCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '25-mediation-latency-calculator':
+        return <MediationLatencyCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '29-kpi-tree-calculator':
+        return <KpiTreeCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '28-whale-ab-test-calculator':
+        return <WhaleAbTestCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '06-retention-benchmark-calculator':
+        return <RetentionBenchmarkCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '19-liveops-season-impact':
+        return <LiveOpsSeasonImpactCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
       default:
         return <div>Utility not found</div>;
     }
