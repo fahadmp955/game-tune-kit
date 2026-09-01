@@ -275,4 +275,29 @@ export interface EnergySystemOutputs { totalMinutesToFullRegen: number; fullRege
 export interface AdRevenueInputs { dau: number; impressionsPerUser: number; fillRatePercent: number; ecpmUsd: number; }
 export interface AdRevenueOutputs { dailyAdRevenue: number; monthlyAdRevenue: number; }
 
+// 33. Churn Types
+export interface ChurnInputs { d1RetentionPercent: number; d7RetentionPercent: number; d30RetentionPercent: number; }
+export interface ChurnOutputs { d1Churn: number; d7Churn: number; d30Churn: number; }
+
+// 34. Soft Launch Scorecard Types
+export interface SoftLaunchScorecardInputs { d1Retention: number; d7Retention: number; d30Arpu: number; cpi: number; }
+export interface SoftLaunchScorecardOutputs { overallScore: number; readinessRating: string; }
+
+// 35. LiveOps Cadence Types
+export interface LiveOpsCadenceInputs { eventDurationDays: number; cooldownDays: number; monthlyEventsTarget: number; }
+export interface LiveOpsCadenceOutputs { activeDaysPerMonth: number; totalCooldownDaysMonth: number; fatigueRisk: string; }
+
+// 11 / 02B. Whale Spend Ceiling Types
+export interface WhaleSpendCeilingInputs { progressionMaxSpend: number; gachaCollectionMaxSpend: number; monthlyLiveOpsCap: number; }
+export interface WhaleSpendCeilingOutputs { totalSpendCeiling: number; annualLiveOpsSpend: number; depthRating: string; }
+
+// 22 / 03B. Ad vs IAP Cannibalisation Types
+export interface AdVsIapCannibalisationInputs { adFrequencyPerSession: number; baselineIapConversionRate: number; }
+export interface AdVsIapCannibalisationOutputs { cannibalisationImpactPercent: number; netIapConversionRate: number; }
+
+// 26 / 04B. Subscription Paywall Funnel Types
+export interface SubscriptionFunnelInputs { monthlySubscriptionPrice: number; trialToPaidConversionPercent: number; monthlyChurnPercent: number; }
+export interface SubscriptionFunnelOutputs { subscriberLtv: number; subscriberActiveMonths: number; }
+
+
 
