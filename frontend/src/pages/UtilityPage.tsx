@@ -16,6 +16,14 @@ import { PppCalculatorView } from '../components/utilities/PppCalculatorView';
 import { PackValueCalculatorView } from '../components/utilities/PackValueCalculatorView';
 import { CurrencyExchangeCalculatorView } from '../components/utilities/CurrencyExchangeCalculatorView';
 import { EconomyInflationCalculatorView } from '../components/utilities/EconomyInflationCalculatorView';
+import { SourceSinkCalculatorView } from '../components/utilities/SourceSinkCalculatorView';
+import { PityCalculatorView } from '../components/utilities/PityCalculatorView';
+import { GachaCostCalculatorView } from '../components/utilities/GachaCostCalculatorView';
+import { XpCurveCalculatorView } from '../components/utilities/XpCurveCalculatorView';
+import { RewardValueCalculatorView } from '../components/utilities/RewardValueCalculatorView';
+import { BattlePassCalculatorView } from '../components/utilities/BattlePassCalculatorView';
+import { EnergySystemCalculatorView } from '../components/utilities/EnergySystemCalculatorView';
+import { AdRevenueCalculatorView } from '../components/utilities/AdRevenueCalculatorView';
 import { Share2, ArrowLeft } from 'lucide-react';
 
 interface UtilityPageProps {
@@ -73,6 +81,22 @@ export const UtilityPage: React.FC<UtilityPageProps> = ({ utilityId, onBackToCat
         return { name: 'Currency Exchange Calculator', code: '10', family: 'Economy & Systems' };
       case '12-economy-inflation-calculator':
         return { name: 'Economy Inflation Calculator', code: '12', family: 'Economy & Systems' };
+      case '13-source-sink-calculator':
+        return { name: 'Source / Sink Balance Calculator', code: '13', family: 'Economy & Systems' };
+      case '15-pity-calculator':
+        return { name: 'Pity System Calculator', code: '15', family: 'Economy & Systems' };
+      case '16-gacha-cost-calculator':
+        return { name: 'Gacha Cost Calculator', code: '16', family: 'Economy & Systems' };
+      case '17-xp-curve-calculator':
+        return { name: 'XP & Progression Curve Generator', code: '17', family: 'Economy & Systems' };
+      case '18-reward-value-calculator':
+        return { name: 'Reward Value Calculator', code: '18', family: 'LiveOps' };
+      case '20-battle-pass-calculator':
+        return { name: 'Battle Pass Calculator', code: '20', family: 'LiveOps' };
+      case '21-energy-system-calculator':
+        return { name: 'Energy System Calculator', code: '21', family: 'Economy & Systems' };
+      case '23-ad-revenue-calculator':
+        return { name: 'Ad Revenue Calculator', code: '23', family: 'Growth / UA' };
       default:
         return { name: 'Calculator Utility', code: '00', family: 'General' };
     }
@@ -110,6 +134,22 @@ export const UtilityPage: React.FC<UtilityPageProps> = ({ utilityId, onBackToCat
         return <CurrencyExchangeCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
       case '12-economy-inflation-calculator':
         return <EconomyInflationCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '13-source-sink-calculator':
+        return <SourceSinkCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '15-pity-calculator':
+        return <PityCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '16-gacha-cost-calculator':
+        return <GachaCostCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '17-xp-curve-calculator':
+        return <XpCurveCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '18-reward-value-calculator':
+        return <RewardValueCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '20-battle-pass-calculator':
+        return <BattlePassCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '21-energy-system-calculator':
+        return <EnergySystemCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
+      case '23-ad-revenue-calculator':
+        return <AdRevenueCalculatorView initialInputs={currentInputs} onInputsChange={setCurrentInputs} />;
       default:
         return <div>Utility not found</div>;
     }
