@@ -36,6 +36,7 @@ export class SegmentsService {
       description: dto.description,
       combinator: dto.combinator || 'AND',
       rules: dto.rules || [],
+      cachedReach: dto.cachedReach || 0,
     });
 
     return this.segmentRepository.save(segment);

@@ -27,4 +27,8 @@ export class CreateSegmentDto {
   })
   @IsArray()
   rules: SegmentRule[];
+
+  @ApiProperty({ example: 4800, required: false })
+  @IsOptional()
+  cachedReach?: number;
 }
