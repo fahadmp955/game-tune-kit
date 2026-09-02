@@ -155,9 +155,39 @@ export const PnsDashboardPage: React.FC = () => {
           gatewayStatus: 200,
           statusText: 'Delivered via Gateway',
           messageId: data.messageId || `msg_${Date.now()}`,
-          adapter: testPlatform === 'ios' ? 'ApnsPushAdapter (HTTP/2)' : 'FcmPushAdapter (HTTP v1)',
+          adapter:
+            testPlatform === 'web'
+              ? 'WebPushAdapter (W3C VAPID)'
+              : testPlatform === 'ios'
+              ? 'ApnsPushAdapter (HTTP/2)'
+              : 'FcmPushAdapter (HTTP v1)',
           payloadDelivered: { title: campaignTitle, body: campaignBody },
         });
+
+        // Trigger native notification popup on this browser
+        if (testPlatform === 'web' && typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready
+              .then((reg) => {
+                reg.showNotification(campaignTitle || '🎮 GameTuneKit Alert', {
+                  body: campaignBody || 'Instant test notification from PNS Studio',
+                  icon: '/favicon.ico',
+                  tag: 'gtk-test-' + Date.now(),
+                });
+              })
+              .catch(() => {
+                new Notification(campaignTitle || '🎮 GameTuneKit Alert', {
+                  body: campaignBody || 'Instant test notification from PNS Studio',
+                  icon: '/favicon.ico',
+                });
+              });
+          } else {
+            new Notification(campaignTitle || '🎮 GameTuneKit Alert', {
+              body: campaignBody || 'Instant test notification from PNS Studio',
+              icon: '/favicon.ico',
+            });
+          }
+        }
       } else {
         throw new Error('Backend offline');
       }

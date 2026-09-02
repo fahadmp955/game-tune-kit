@@ -4,37 +4,36 @@
  */
 
 self.addEventListener('push', (event) => {
+  console.log('[Service Worker] Push event received:', event);
+
   let data = {};
   if (event.data) {
     try {
       data = event.data.json();
     } catch {
-      data = { title: 'GameTuneKit Notification', body: event.data.text() };
+      data = { title: '🎮 GameTuneKit Alert', body: event.data.text() };
     }
   }
 
   const title = data.title || '🎮 GameTuneKit Alert';
   const options = {
     body: data.body || 'You have a new in-game update!',
-    icon: data.icon || '/favicon.ico',
-    badge: data.badge || '/favicon.ico',
-    vibrate: [200, 100, 200],
+    icon: '/favicon.ico',
+    badge: '/favicon.ico',
+    tag: 'gametune-alert-' + Date.now(),
+    renotify: true,
     data: data.data || {},
-    actions: [
-      { action: 'open', title: 'Open Game' },
-      { action: 'close', title: 'Dismiss' },
-    ],
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil(
+    self.registration.showNotification(title, options).catch((err) => {
+      console.error('[Service Worker] showNotification error:', err);
+    }),
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-
-  if (event.action === 'close') {
-    return;
-  }
 
   const targetUrl = event.notification.data?.url || '/?view=pns';
 
@@ -42,7 +41,6 @@ self.addEventListener('notificationclick', (event) => {
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
       for (const client of windowClients) {
         if ('focus' in client) {
-          client.navigate(targetUrl);
           return client.focus();
         }
       }
