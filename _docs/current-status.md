@@ -9,7 +9,8 @@
 | **Phase 2: Superpowers & Quality Automation** | Completed | 2026-09-02 | 14 Superpowers skills installed + custom `browser-ui-testing` skill + Vitest suites |
 | **Phase 3: PNS Operational Platform (L1)** | Completed | 2026-09-02 | Production NestJS microservice, Port-Adapter-Resolver push engine, multi-game isolation, and Studio Dashboard |
 | **Phase 4: Cloud Infrastructure & Deployment** | Completed | 2026-09-02 | Live Render backend + Supabase PostgreSQL database + Cloudflare Pages frontend |
-| **Phase 5: Web Push (W3C / VAPID)** | In Planning | Active | Extending PNS with browser Web Push API, Service Workers, and VAPID key pairs |
+| **Phase 5: Web Push (W3C / VAPID)** | Completed | 2026-09-02 | WebPushAdapter, VAPID key distribution, Service Worker (sw.js), and 1-click test console |
+| **Phase 6: Mobile Client SDK & Companion App** | In Planning | Active | Drop-in Unity (C#), React Native / Expo, and Swift/Kotlin SDK contracts |
 
 ---
 

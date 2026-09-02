@@ -42,15 +42,21 @@ This document tracks completed milestones, active deliverables, and future archi
 
 ---
 
+### Phase 5: Web Push Notifications (W3C Push API & VAPID)
+- [x] VAPID key generation (`web-push` standard) and public key distribution endpoint (`GET /api/v1/web-push/public-key`).
+- [x] Dedicated `WebPushAdapter` implementing `NotificationPushPort` in backend.
+- [x] Client Service Worker (`sw.js`) to intercept push events, show system notifications, and handle notification clicks.
+- [x] Frontend 1-Click "Enable Web Push on This Browser" button in PNS Studio to register real browser endpoints and test live delivery.
+- [x] Automated backend Vitest test suite (`backend/test/webpush.test.ts`) passing (8/8 tests).
+
+---
+
 ## 🚀 Active & Planned Roadmap
 
-### Phase 5: Web Push Notifications (W3C Push API & VAPID) — [ACTIVE PLANNING]
-- [ ] VAPID key generation (`web-push` standard) and public key distribution endpoint (`GET /api/v1/web-push/public-key`).
-- [ ] Dedicated `WebPushAdapter` implementing `NotificationPushPort` in backend.
-- [ ] Client Service Worker (`sw.js`) to intercept push events, show system notifications, and handle notification clicks.
-- [ ] Frontend 1-Click "Enable Web Push on This Browser" button in PNS Studio to register real browser endpoints and test live delivery.
-
-### Phase 6: Remote Config & Feature Flags (Layer 2 / Layer 3)
+### Phase 6: Mobile Client SDK & Companion App (Unity, React Native, Swift/Kotlin) — [ACTIVE NEXT]
+- [ ] Drop-in SDK contract & documentation tab in PNS Studio (Unity C#, React Native, Flutter, Swift, Kotlin).
+- [ ] Lightweight React Native / Expo companion demo app with push registration.
+- [ ] Deep-link routing test inside mobile companion client.
 - [ ] Implement `RemoteConfigModule` in backend to serve dynamic configuration JSON per game.
 - [ ] Connect Remote Config to PNS Cohorts.
 

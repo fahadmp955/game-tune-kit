@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { API_BASE_URL } from '../utils/apiConfig';
+import { subscribeToWebPush } from '../utils/webPushManager';
 import {
   Send,
   Smartphone,
@@ -9,6 +10,9 @@ import {
   Clock,
   Layers,
   Plus,
+  Globe,
+  Sparkles,
+  AlertCircle,
 } from 'lucide-react';
 
 interface Game {
@@ -50,6 +54,26 @@ export const PnsDashboardPage: React.FC = () => {
   const [testPlatform, setTestPlatform] = useState<'android' | 'ios' | 'web'>('android');
   const [testResponse, setTestResponse] = useState<any | null>(null);
   const [isTestSending, setIsTestSending] = useState(false);
+  const [isSubscribingWeb, setIsSubscribingWeb] = useState(false);
+  const [webPushStatus, setWebPushStatus] = useState<string | null>(null);
+
+  const handleRegisterBrowserWebPush = async () => {
+    setIsSubscribingWeb(true);
+    setWebPushStatus(null);
+    const result = await subscribeToWebPush(API_BASE_URL, undefined, 'demo_web_player', {
+      level: 15,
+      lifetimeSpend: 0,
+      role: 'web_tester',
+    });
+    setIsSubscribingWeb(false);
+    if (result.success && result.token) {
+      setTestToken(result.token);
+      setTestPlatform('web');
+      setWebPushStatus('✓ Subscribed! Your browser is registered as a live device. Click "Send Test Notification" below to see a real system alert.');
+    } else {
+      setWebPushStatus(`⚠️ Subscription failed: ${result.error || 'Permission denied'}`);
+    }
+  };
 
   // Cohorts List
   const [cohorts, setCohorts] = useState<Cohort[]>([
@@ -495,6 +519,49 @@ export const PnsDashboardPage: React.FC = () => {
                 Test real gateway response, latency, and payload delivery directly to any APNs, FCM, or Web token.
               </p>
             </div>
+          </div>
+
+          {/* 1-Click Native Web Push Action Card */}
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-900/30 via-violet-900/20 to-cyan-900/30 border border-indigo-500/30 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                  <Globe className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white flex items-center space-x-1.5">
+                    <span>Test on this Browser (W3C Web Push)</span>
+                    <span className="px-1.5 py-0.5 text-[9px] font-extrabold uppercase rounded bg-indigo-500/20 text-indigo-300">
+                      Zero Setup
+                    </span>
+                  </h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    Subscribe your current browser to receive real native OS push notifications on your screen.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleRegisterBrowserWebPush}
+                disabled={isSubscribingWeb}
+                className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1.5 shrink-0"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{isSubscribingWeb ? 'Requesting...' : 'Enable Web Push on This Browser'}</span>
+              </button>
+            </div>
+
+            {webPushStatus && (
+              <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-700/80 text-[11px] font-semibold text-slate-200 flex items-center space-x-2">
+                {webPushStatus.startsWith('✓') ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                )}
+                <span>{webPushStatus}</span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">

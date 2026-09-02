@@ -16,12 +16,18 @@ services:
       - key: SWAGGER_ENABLED
         value: true
       - key: PUSH_MOCK_MODE
-        value: true
+        value: false
       - key: LOG_LEVEL
         value: info
       - key: DATABASE_TYPE
         value: postgres
       - key: DB_SSL
         value: true
+      - key: VAPID_PUBLIC_KEY
+        value: BMP47yhOvCtTsM2PDhjzS24qzmqQnl10vqy7nIkUAPQ3QvmWutaMnyUflJuu7qXynjnWk_YdklzX1rN7loyBUvw
+      - key: VAPID_PRIVATE_KEY
+        value: DO2MK4W9HRzCJpUraN8KXXcnxz2NZvd2jDEHVYfwLbY
+      - key: VAPID_SUBJECT
+        value: mailto:admin@gametunekit.com
       - key: DATABASE_URL
         sync: false # Set in Render Dashboard with your Supabase Connection URI

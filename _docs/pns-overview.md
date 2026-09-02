@@ -215,12 +215,13 @@ If your game introduces a new metric tomorrow (e.g., `hasBattlePass: true`, `her
 ## 🔌 7. Port-Adapter-Resolver Implementation
 *(Adheres to `.agents/skills/backend-architecture`)*
 
-* **Port (`NotificationPushPort`):** Interface defining `sendPush(message: PushMessage): Promise<PushResult>`.
+* **Port (`NotificationPushPort`):** Interface defining `send(message: PushMessage): Promise<PushResult>`.
 * **Adapters:**
   * `FcmPushAdapter`: Google FCM HTTP v1 REST API with OAuth2 / Service Account JWT.
   * `ApnsPushAdapter`: Apple APNs HTTP/2 client authenticated with `.p8` private key tokens.
+  * `WebPushAdapter`: Native W3C Web Push Protocol (RFC 8030) using VAPID public-key encryption (RFC 8292). Delivers encrypted payloads directly to browser push gateways (Google FCM Web, Mozilla Autopush, Apple Web Push) with background Service Worker (`sw.js`) execution.
   * `MockPushAdapter`: In-memory sandbox adapter for zero-credential local development and automated CI testing.
-* **Resolver (`PushAdapterResolver`):** Dynamically inspects device platform (`ios` vs `android`) and `.env` flags (`PUSH_MOCK_MODE=true`) to route payloads cleanly.
+* **Resolver (`PushAdapterResolver`):** Dynamically inspects device platform (`ios` vs `android` vs `web`) and `.env` flags to route payloads cleanly.
 
 ---
 

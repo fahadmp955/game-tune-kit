@@ -18,3 +18,4 @@ This log records major technical, architectural, product, and UI design decision
 | **Dual Database Strategy** | Decided | Infrastructure | `better-sqlite3` for fast, zero-dependency local development and CI test runners; PostgreSQL via TypeORM for production deployments. |
 | **Zero Vulnerability Policy** | Decided | Security | All dependencies across `frontend/` and `backend/` must pass `npm audit` with **0 vulnerabilities**. Transitive risks mitigated via explicit `overrides`. |
 | **Autonomous Browser UI Testing** | Decided | Quality / Testing | Mandate subagent browser testing (`browser-ui-testing` skill) to visually and interactively verify UI layouts, theme changes, and API dispatches with recorded session evidence. |
+| **Web Push (W3C Push API / VAPID)** | Decided | Architecture | Enable native browser desktop and mobile web push using RFC 8030 / RFC 8292 with zero third-party subscription fees and Service Worker background execution. |

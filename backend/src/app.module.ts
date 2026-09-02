@@ -8,6 +8,7 @@ import { PlayersModule } from './modules/players/players.module';
 import { DevicesModule } from './modules/devices/devices.module';
 import { SegmentsModule } from './modules/segments/segments.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
+import { WebPushModule } from './modules/web-push/web-push.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CampaignsModule } from './modules/campaigns/campaigns.module';
     DevicesModule,
     SegmentsModule,
     CampaignsModule,
+    WebPushModule,
   ],
 })
 export class AppModule {}
