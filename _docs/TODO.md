@@ -1,6 +1,6 @@
 # 📋 Project Backlog & Roadmap — GameTuneKit
 
-This document tracks completed milestones, current deliverables, and future architectural roadmaps for GameTuneKit.
+This document tracks completed milestones, active deliverables, and future architectural roadmaps for GameTuneKit.
 
 ---
 
@@ -10,11 +10,7 @@ This document tracks completed milestones, current deliverables, and future arch
 - [x] Scaffold canonical project documentation under `_docs/` (Overview, 37 PRDs, Architecture).
 - [x] Setup Vite + React + TypeScript + Tailwind CSS project in `frontend/` folder.
 - [x] Implement global `ThemeContext` (Dark default with auto-detecting system preferences).
-- [x] Implement complete 36-calculator suite across 4 parallel batches:
-  - [x] **Monetisation Family:** LTV (#01), ARPDAU/ARPPU (#07), PPP Pricing (#08), Pack Value (#09), Currency Exchange (#10), Whale Spend Ceiling (#11).
-  - [x] **Growth & UA Family:** ROAS (#02), Break-even CPI (#03), UA Payback (#04), LTV-to-CAC & Runway (#05), Retention Benchmark (#06).
-  - [x] **Economy & Systems Family:** Inflation (#12), Source/Sink (#13), Loot/Drop-Rate (#14), Pity System (#15), Gacha Cost (#16), XP Curve (#17), Reward Value (#18), Battle Pass (#20), Energy Systems (#21), Cannibalisation (#22), Ad Revenue (#23).
-  - [x] **Data & LiveOps Families:** Ad Yield (#24), Mediation Latency (#25), Subscription Funnel (#26), A/B Sample Size (#27), Whale A/B (#28), KPI Tree (#29), K-Factor (#30), ATT Dilution (#31), DAU/MAU Stickiness (#32), Churn (#33), Soft Launch Scorecard (#34), Cadence (#35), Offer Discount (#36), Season Impact (#19).
+- [x] Implement complete 36-calculator suite across 4 parallel batches.
 - [x] 1-Click Clipboard Share Button & State Encoding (`?util=...&state=...`) with Toast notifications.
 
 ### Phase 2: Superpowers Skills & Quality Automation
@@ -23,7 +19,7 @@ This document tracks completed milestones, current deliverables, and future arch
 - [x] Installed `vitest` + `@testing-library/react` and configured `npm test` suites.
 
 ### Phase 3: Push Notification Service (PNS) — Layer 1 Operational Platform
-- [x] Scaffolding NestJS 12 microservice backend in `backend/` adhering to `.agents/skills/backend-architecture`.
+- [x] Scaffolding NestJS microservice backend in `backend/` adhering to `.agents/skills/backend-architecture`.
 - [x] Implement Port-Adapter-Resolver push engine (`NotificationPushPort`, `FcmPushAdapter`, `ApnsPushAdapter`, `MockPushAdapter`, `PushAdapterResolver`).
 - [x] Multi-tenancy support (`GamesModule`) with API key authentication (`X-Game-Key` / `GameAuthGuard`).
 - [x] Idempotent Device Registration (`DevicesModule`) with token pruning on `410 / UNREGISTERED`.
@@ -36,19 +32,28 @@ This document tracks completed milestones, current deliverables, and future arch
   - [x] Instant Single-Device Test Console with gateway response preview.
   - [x] Cohorts & Segments visual manager with "+ Create New Cohort" modal.
   - [x] Delivery History & Analytics KPI cards.
-- [x] Autonomous browser subagent testing session recorded to WebP video artifact.
-- [x] Strict 0 dependency vulnerabilities across both `frontend/` and `backend/`.
+
+### Phase 4: Production Cloud Deployment & Database Sync
+- [x] Supabase PostgreSQL Database connected via IPv4 Connection Pooler in `ap-south-1` (`aws-0-ap-south-1.pooler.supabase.com`).
+- [x] TypeORM table synchronization across all 5 tables (`games`, `devices`, `players`, `segments`, `campaigns`).
+- [x] Render.com Web Service live at `https://gametune-kit-backend.onrender.com`.
+- [x] NestJS 11 LTS migration ensuring native CommonJS compatibility, 0 stack overflows, and 0 vulnerabilities.
+- [x] Cloudflare Pages frontend configured with dynamic `API_BASE_URL` defaulting to Render backend.
 
 ---
 
-## 🚀 Active & Future Roadmap
+## 🚀 Active & Planned Roadmap
 
-### Phase 4: Remote Config & Feature Flags (Layer 2 / Layer 3)
+### Phase 5: Web Push Notifications (W3C Push API & VAPID) — [ACTIVE PLANNING]
+- [ ] VAPID key generation (`web-push` standard) and public key distribution endpoint (`GET /api/v1/web-push/public-key`).
+- [ ] Dedicated `WebPushAdapter` implementing `NotificationPushPort` in backend.
+- [ ] Client Service Worker (`sw.js`) to intercept push events, show system notifications, and handle notification clicks.
+- [ ] Frontend 1-Click "Enable Web Push on This Browser" button in PNS Studio to register real browser endpoints and test live delivery.
+
+### Phase 6: Remote Config & Feature Flags (Layer 2 / Layer 3)
 - [ ] Implement `RemoteConfigModule` in backend to serve dynamic configuration JSON per game.
-- [ ] Connect Remote Config to PNS Cohorts (e.g. serve different remote config values to "Whales" vs "Minnows").
-- [ ] Feature Flags API: Rollout percentages and gradual release toggles.
+- [ ] Connect Remote Config to PNS Cohorts.
 
-### Phase 5: LiveOps Calendar & Event Orchestration (Layer 4)
+### Phase 7: LiveOps Calendar & Event Orchestration (Layer 4)
 - [ ] Unified LiveOps Event Calendar in Studio Dashboard.
-- [ ] Automatic PNS campaign scheduling synced with event launch and countdown reminders.
-- [ ] Cross-system conflict detection (prevent event launch before app update rollout completes).
+- [ ] Automatic PNS campaign scheduling synced with event launch.

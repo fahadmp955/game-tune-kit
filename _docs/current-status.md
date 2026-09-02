@@ -8,32 +8,32 @@
 | **Phase 1: 36 Standalone Utilities (L0)** | Completed | 2026-09-02 | 100% of the 36 GameTuneKit calculators implemented across 4 parallel batches |
 | **Phase 2: Superpowers & Quality Automation** | Completed | 2026-09-02 | 14 Superpowers skills installed + custom `browser-ui-testing` skill + Vitest suites |
 | **Phase 3: PNS Operational Platform (L1)** | Completed | 2026-09-02 | Production NestJS microservice, Port-Adapter-Resolver push engine, multi-game isolation, and Studio Dashboard |
-| **Phase 4: Remote Config & LiveOps (L2/L3)** | Planned | Roadmap | Connecting reusable cohorts into dynamic runtime config and seasonal calendars |
+| **Phase 4: Cloud Infrastructure & Deployment** | Completed | 2026-09-02 | Live Render backend + Supabase PostgreSQL database + Cloudflare Pages frontend |
+| **Phase 5: Web Push (W3C / VAPID)** | In Planning | Active | Extending PNS with browser Web Push API, Service Workers, and VAPID key pairs |
 
 ---
 
-## ⚙️ Implemented Architecture & System State
+## ⚙️ Live Production Infrastructure State
 
-### 1. PNS Operational Platform (Layer 1 — Full Stack)
-- **Production NestJS Microservice (`backend/`):**
-  - **Framework:** NestJS 12 + TypeScript (Strict) + TypeORM.
-  - **Port-Adapter-Resolver Push Engine:** Decoupled `NotificationPushPort` with `FcmPushAdapter` (Google FCM v1), `ApnsPushAdapter` (Apple APNs HTTP/2), `MockPushAdapter` (sandbox testing), and dynamic `PushAdapterResolver`.
-  - **Multi-Tenant Game Sizing:** `GamesModule` with `X-Game-Key` header authentication (`GameAuthGuard`), isolating players, devices, tokens, cohorts, and credentials per game.
-  - **Device & Attribute Ingestion:** Idempotent registration (`POST /api/v1/devices/register`), token lifecycle tracking, dynamic JSON player attributes map, and dead-token pruning on `410 / UNREGISTERED`.
-  - **Dynamic Cohort Engine:** `SegmentsModule` evaluates compound rules (`attributes.lifetimeSpend >= 100 AND daysInactive >= 7`) to compute real-time audience reach.
-  - **Campaigns & Guardrails:** `CampaignsModule` enforces **Quiet Hours** (10:00 PM – 8:00 AM recipient local time) and **Frequency Capping** (max 1 push/24h default).
-  - **Observability:** Mandatory Health Probe (`GET /api/v1/health`), Prometheus Metrics (`GET /api/v1/metrics`), and Swagger OpenAPI Docs (`/api/v1/docs`, .env-gated).
+### 1. Backend Microservice (Render.com)
+- **Live URL:** `https://gametune-kit-backend.onrender.com`
+- **Health Endpoint:** `https://gametune-kit-backend.onrender.com/api/v1/health` (Verified `HTTP 200 OK`)
+- **Prometheus Telemetry:** `https://gametune-kit-backend.onrender.com/api/v1/metrics`
+- **Interactive Swagger Docs:** `https://gametune-kit-backend.onrender.com/api/v1/docs`
+- **Framework:** NestJS 11 LTS (`@nestjs/*: ^11.2.3`), native CommonJS, TypeScript 5.6, TypeORM 0.3.20.
+- **Vulnerabilities:** **0 vulnerabilities** (`npm audit` verified).
 
-### 2. Frontend Studio Dashboard & Utilities SPA (`frontend/`)
-- **Framework:** Vite 6 + React 18 + TypeScript + Tailwind CSS.
+### 2. Managed Database (Supabase PostgreSQL)
+- **Host / Region:** `aws-0-ap-south-1.pooler.supabase.com:5432` (AWS Mumbai, IPv4 Pooler)
+- **Database:** `postgres` with SSL enabled (`rejectUnauthorized: false`)
+- **Schema Auto-Sync:** 5 live tables (`games`, `devices`, `players`, `segments`, `campaigns`) active and indexed.
+
+### 3. Frontend Portal (Cloudflare Pages)
+- **Build / Runtime:** Vite 6 + React 18 SPA on Cloudflare Pages.
+- **Dynamic API Client:** `frontend/src/utils/apiConfig.ts` automatically resolves `https://gametune-kit-backend.onrender.com/api/v1` in production.
 - **Top-Level Header Switcher:** Seamless toggle between **"Calculators"** and **"PNS Studio"**.
-- **Multi-Game Tenant Selector:** Dropdown supporting multiple studio games (`Cyber Clash 2088`, `Puzzle Quest Saga`).
-- **PNS Studio Workspaces (`PnsDashboardPage.tsx`):**
-  - **Live Mobile Simulator:** Real-time dual-platform preview (iOS 17 glassmorphic card & Android 14 material notification drawer).
-  - **Instant Test Console:** Direct single-token or browser push tester returning live gateway receipts (`HTTP 200 OK`).
-  - **Cohorts & Segments:** Pre-configured templates (`Whales $100+`, `Lapsed D7`, `Engaged Non-Payers`, `All Players`) and Visual Rule Builder modal.
-  - **Delivery History & Analytics:** Real-time KPI stat cards and historical campaign log table.
-- **Complete 36 Calculator Suite:** All 36 calculators across 6 categories (Monetisation, Growth/UA, Intelligence, Economy, LiveOps, Data & A/B) fully implemented with 1-click clipboard state sharing.
+- **Live Mobile Lockscreen Simulator:** Real-time dual-platform preview (iOS 17 & Android 14).
+- **Instant Test Console:** Connected directly to live Render backend.
 
 ---
 
@@ -45,10 +45,4 @@
 | **Frontend Unit Tests** | `frontend/src/engine/__tests__/` (LTV, ROAS, CPI, Share URLs) | **8 passed (8)** | `PASS` |
 | **TypeScript Build** | `tsc -p tsconfig.build.json` (Backend & Frontend) | **0 errors** | `PASS` |
 | **Security Audit** | `npm audit` across both projects | **0 vulnerabilities** | `PASS` |
-| **Autonomous UI Subagent** | Live browser navigation, preview toggle, and test push | **Verified in Chrome** | `PASS` |
-
----
-
-## 📦 Source Control & Deployment
-- Git commits pushed to GitHub: [github.com/fahadmp955/game-tune-kit](https://github.com/fahadmp955/game-tune-kit)
-- Monorepo structure with standalone `backend/` and `frontend/` folders.
+| **Live API Health Probe** | Render to Supabase connection ping | **Latency 44ms (UP)** | `PASS` |

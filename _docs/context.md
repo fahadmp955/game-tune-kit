@@ -1,25 +1,17 @@
 # 📝 Agent Context Scratchpad — GameTuneKit
 
-## Current Operational State
-- **Monorepo Architecture:**
-  - `frontend/`: Vite 6 + React 18 SPA serving all 36 standalone calculators + PNS Studio Dashboard.
-  - `backend/`: NestJS 12 microservice implementing the complete Push Notification Service (PNS).
-  - `_docs/`: Canonical specifications, overview, PNS context (`pns-overview.md`), PRDs, and logs.
-  - `.agents/skills/`: Complete suite of 14 Superpowers skills + `browser-ui-testing` + `backend-architecture`.
+## Live Production Architecture
+- **Frontend (Cloudflare Pages):**
+  - Git connected: Auto-deploys from `main` branch.
+  - Dynamic API Base: Defaults to `https://gametune-kit-backend.onrender.com/api/v1`.
+- **Backend (Render.com Web Service):**
+  - Live Base URL: `https://gametune-kit-backend.onrender.com`
+  - Health Probe: `https://gametune-kit-backend.onrender.com/api/v1/health`
+  - Prometheus Telemetry: `https://gametune-kit-backend.onrender.com/api/v1/metrics`
+  - Swagger Documentation: `https://gametune-kit-backend.onrender.com/api/v1/docs`
+- **Database (Supabase PostgreSQL):**
+  - Host: `aws-0-ap-south-1.pooler.supabase.com:5432` (AWS Mumbai pooler)
+  - Tables: `games`, `devices`, `players`, `segments`, `campaigns` (active and indexed).
 
-## Key Verification & Testing Commands
-- **Backend Tests:** `cd backend && npm test` (Vitest unit tests: 5 passed).
-- **Backend Build & Audit:** `cd backend && npm run build && npm audit` (0 TS errors, 0 vulnerabilities).
-- **Frontend Tests:** `cd frontend && npm test` (Vitest unit tests: 8 passed).
-- **Frontend Build & Audit:** `cd frontend && npm run build && npm audit` (0 TS errors, 0 vulnerabilities).
-
-## Running Dev Services
-- Frontend dev server runs on `http://localhost:3000` (or `5173`).
-- Backend NestJS server runs on `http://localhost:3000` (API prefix: `/api/v1`).
-- Swagger OpenAPI documentation at `http://localhost:3000/api/v1/docs`.
-- Health probe at `http://localhost:3000/api/v1/health`.
-- Prometheus metrics at `http://localhost:3000/api/v1/metrics`.
-
-## GitHub Sync State
-- Repository: [github.com/fahadmp955/game-tune-kit](https://github.com/fahadmp955/game-tune-kit)
-- Branch: `main` (clean sync).
+## Active Task
+- Designing implementation plan for **Web Version of Push Notifications** (W3C Push API, VAPID keys, Service Worker `sw.js`, and `WebPushAdapter`).
