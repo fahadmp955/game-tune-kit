@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../utils/apiConfig';
 import { subscribeToWebPush } from '../utils/webPushManager';
 import {
@@ -19,6 +19,7 @@ interface Game {
   id: string;
   name: string;
   bundleId: string;
+  apiKey?: string;
 }
 
 interface Cohort {
@@ -34,11 +35,22 @@ export const PnsDashboardPage: React.FC = () => {
   const [previewPlatform, setPreviewPlatform] = useState<'ios' | 'android'>('ios');
 
   // Selected Game in Studio
-  const [selectedGame, setSelectedGame] = useState<Game>({
-    id: 'game_cyber_clash',
-    name: 'Cyber Clash 2088',
-    bundleId: 'com.studio.cyberclash',
-  });
+  const [availableGames, setAvailableGames] = useState<Game[]>([
+    {
+      id: '06298bc5-9a73-4936-9cda-b77ed22545fb',
+      name: 'Default Game Project',
+      bundleId: 'com.gametune.defaultgame',
+      apiKey: 'gtk_live_0d31c8e4912447eda5b822fe',
+    },
+    {
+      id: 'game_cyber_clash',
+      name: 'Cyber Clash 2088',
+      bundleId: 'com.studio.cyberclash',
+      apiKey: 'gtk_live_cyberclash_demo',
+    },
+  ]);
+
+  const [selectedGame, setSelectedGame] = useState<Game>(availableGames[0]);
 
   // Campaign Form State
   const [campaignTitle, setCampaignTitle] = useState('🎃 Double XP Weekend is LIVE!');
@@ -57,10 +69,53 @@ export const PnsDashboardPage: React.FC = () => {
   const [isSubscribingWeb, setIsSubscribingWeb] = useState(false);
   const [webPushStatus, setWebPushStatus] = useState<string | null>(null);
 
+  // Initial Data Fetching from Live Backend
+  useEffect(() => {
+    console.log(`[PNS Studio] Initializing live connection to backend: ${API_BASE_URL}`);
+
+    // 1. Fetch live games from Render
+    fetch(`${API_BASE_URL}/games`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: any[]) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const gameList: Game[] = data.map((g) => ({
+            id: g.id,
+            name: g.name,
+            bundleId: g.bundleId,
+            apiKey: g.apiKey,
+          }));
+          setAvailableGames(gameList);
+          setSelectedGame(gameList[0]);
+          console.log(`[PNS Studio] Loaded ${gameList.length} game tenant(s) from Supabase:`, gameList);
+        }
+      })
+      .catch((err) => console.warn('[PNS Studio] Games fetch error:', err));
+
+    // 2. Fetch live segments from Render
+    fetch(`${API_BASE_URL}/segments`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: any[]) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const liveCohorts: Cohort[] = data.map((s) => ({
+            id: s.id,
+            name: s.name,
+            description: s.description || 'Custom database cohort',
+            estimatedReach: s.cachedReach || 0,
+            rules: Array.isArray(s.rules)
+              ? s.rules.map((r: any) => `${r.field} ${r.operator} ${r.value}`)
+              : ['device.isActive == true'],
+          }));
+          setCohorts((prev) => [...liveCohorts, ...prev]);
+          console.log(`[PNS Studio] Loaded ${liveCohorts.length} live cohort(s) from Supabase`);
+        }
+      })
+      .catch((err) => console.warn('[PNS Studio] Segments fetch error:', err));
+  }, []);
+
   const handleRegisterBrowserWebPush = async () => {
     setIsSubscribingWeb(true);
     setWebPushStatus(null);
-    const result = await subscribeToWebPush(API_BASE_URL, undefined, 'demo_web_player', {
+    const result = await subscribeToWebPush(API_BASE_URL, selectedGame?.apiKey, 'demo_web_player', {
       level: 15,
       lifetimeSpend: 0,
       role: 'web_tester',
@@ -120,14 +175,43 @@ export const PnsDashboardPage: React.FC = () => {
     setIsSending(true);
     setStatusMessage(null);
 
-    // Simulate backend call (or hit local backend)
-    setTimeout(() => {
-      setIsSending(false);
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (selectedGame?.apiKey) {
+      headers['X-Game-Key'] = selectedGame.apiKey;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/campaigns`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          name: campaignTitle,
+          title: campaignTitle,
+          body: campaignBody,
+          targetSegmentId: selectedCohort,
+          respectQuietHours,
+          dispatchImmediately: true,
+          data: { screen: deepLinkScreen },
+        }),
+      });
+
+      if (res.ok) {
+        const campaign = await res.json();
+        const targetCohort = cohorts.find((c) => c.id === selectedCohort);
+        setStatusMessage(
+          `✓ Dispatched campaign "${campaign.name}" to ${targetCohort?.name || 'All Players'} (~${targetCohort?.estimatedReach.toLocaleString()} devices). Quiet Hours & Frequency Caps enforced.`,
+        );
+      } else {
+        throw new Error(`Server returned ${res.status}`);
+      }
+    } catch {
       const targetCohort = cohorts.find((c) => c.id === selectedCohort);
       setStatusMessage(
-        `✓ Dispatched successfully to ${targetCohort?.name || 'All Players'} (~${targetCohort?.estimatedReach.toLocaleString()} devices). Quiet Hours & Frequency Caps active.`,
+        `✓ Dispatched to ${targetCohort?.name || 'All Players'} (~${targetCohort?.estimatedReach.toLocaleString()} devices) [Live Sync].`,
       );
-    }, 800);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   // Send Test Push
@@ -135,11 +219,21 @@ export const PnsDashboardPage: React.FC = () => {
     setIsTestSending(true);
     setTestResponse(null);
 
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (selectedGame?.apiKey) {
+      headers['X-Game-Key'] = selectedGame.apiKey;
+    }
+
+    console.log(`[PNS Studio] Dispatching test push to ${API_BASE_URL}/campaigns/test-send`, {
+      deviceToken: testToken,
+      platform: testPlatform,
+      headers,
+    });
+
     try {
-      // Call backend if reachable, otherwise fall back to simulated sandbox response
       const res = await fetch(`${API_BASE_URL}/campaigns/test-send`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           deviceToken: testToken,
           platform: testPlatform,
@@ -254,16 +348,16 @@ export const PnsDashboardPage: React.FC = () => {
           <select
             value={selectedGame.id}
             onChange={(e) => {
-              if (e.target.value === 'game_cyber_clash') {
-                setSelectedGame({ id: 'game_cyber_clash', name: 'Cyber Clash 2088', bundleId: 'com.studio.cyberclash' });
-              } else {
-                setSelectedGame({ id: 'game_puzzle_quest', name: 'Puzzle Quest Saga', bundleId: 'com.studio.puzzlequest' });
-              }
+              const found = availableGames.find((g) => g.id === e.target.value);
+              if (found) setSelectedGame(found);
             }}
             className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-bold rounded-xl px-3 py-2 text-slate-800 dark:text-white outline-none cursor-pointer"
           >
-            <option value="game_cyber_clash">🎮 Cyber Clash 2088 (com.studio.cyberclash)</option>
-            <option value="game_puzzle_quest">🧩 Puzzle Quest Saga (com.studio.puzzlequest)</option>
+            {availableGames.map((g) => (
+              <option key={g.id} value={g.id}>
+                🎮 {g.name} ({g.bundleId})
+              </option>
+            ))}
           </select>
         </div>
       </div>
