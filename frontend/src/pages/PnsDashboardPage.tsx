@@ -35,6 +35,8 @@ interface CampaignItem {
   name: string;
   title: string;
   body: string;
+  targetSegmentId?: string;
+  data?: Record<string, any>;
   status: 'draft' | 'scheduled' | 'sent';
   sentCount: number;
   successCount: number;
@@ -58,6 +60,7 @@ export const PnsDashboardPage: React.FC = () => {
   // Dynamic Cohorts & Campaigns State (100% API-driven)
   const [cohorts, setCohorts] = useState<Cohort[]>([]);
   const [campaigns, setCampaigns] = useState<CampaignItem[]>([]);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string>('new');
   const [isLoading, setIsLoading] = useState(false);
 
   // Campaign Form State
@@ -76,6 +79,28 @@ export const PnsDashboardPage: React.FC = () => {
   const [isTestSending, setIsTestSending] = useState(false);
   const [isSubscribingWeb, setIsSubscribingWeb] = useState(false);
   const [webPushStatus, setWebPushStatus] = useState<string | null>(null);
+
+  // Select campaign template handler
+  const handleSelectCampaign = (id: string) => {
+    setSelectedCampaignId(id);
+    if (id === 'new') {
+      setCampaignTitle('');
+      setCampaignBody('');
+      setDeepLinkScreen('dungeon_hub');
+      return;
+    }
+    const found = campaigns.find((c) => c.id === id);
+    if (found) {
+      setCampaignTitle(found.title || found.name);
+      setCampaignBody(found.body || '');
+      if (found.targetSegmentId) {
+        setSelectedCohort(found.targetSegmentId);
+      }
+      if ((found as any).data?.screen) {
+        setDeepLinkScreen((found as any).data.screen);
+      }
+    }
+  };
 
   // Fetch all cohorts and campaigns for a specific game
   const fetchGameDetails = (game: Game) => {
@@ -123,6 +148,17 @@ export const PnsDashboardPage: React.FC = () => {
       .then((data: any[]) => {
         if (Array.isArray(data)) {
           setCampaigns(data);
+          if (data.length > 0) {
+            setSelectedCampaignId(data[0].id);
+            setCampaignTitle(data[0].title || data[0].name);
+            setCampaignBody(data[0].body || '');
+            if (data[0].targetSegmentId) {
+              setSelectedCohort(data[0].targetSegmentId);
+            }
+            if (data[0].data?.screen) {
+              setDeepLinkScreen(data[0].data.screen);
+            }
+          }
         }
       })
       .catch((err) => console.warn('[PNS Studio] Campaigns fetch error:', err))
@@ -447,10 +483,57 @@ export const PnsDashboardPage: React.FC = () => {
           {/* Left Form Controls */}
           <div className="lg:col-span-7 space-y-6">
             <div className="glass-panel p-6 rounded-2xl space-y-5">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-                <Bell className="w-4 h-4 text-indigo-400" />
-                <span>Compose Push Notification</span>
-              </h3>
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                  <Bell className="w-4 h-4 text-indigo-400" />
+                  <span>Compose Push Notification</span>
+                </h3>
+                <span className="text-[11px] text-slate-400 font-mono">Game: {selectedGame.name}</span>
+              </div>
+
+              {/* Campaign Preset / Template Selector */}
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    Campaign Preset / Saved Template
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectCampaign('new')}
+                    className="text-[11px] font-bold text-indigo-500 hover:text-indigo-400 flex items-center space-x-1"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>+ New Blank Campaign</span>
+                  </button>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <select
+                    value={selectedCampaignId}
+                    onChange={(e) => handleSelectCampaign(e.target.value)}
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-xl px-3.5 py-2.5 outline-none cursor-pointer"
+                  >
+                    <option value="new">✨ + Create New Blank Campaign</option>
+                    {campaigns.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} ({c.status.toUpperCase()} • {c.sentCount ? `${c.sentCount.toLocaleString()} sent` : 'unsent'})
+                      </option>
+                    ))}
+                  </select>
+                  {selectedCampaignId !== 'new' && (
+                    <div className="shrink-0">
+                      {campaigns.find((c) => c.id === selectedCampaignId)?.status === 'sent' ? (
+                        <span className="px-2.5 py-1 text-[10px] font-extrabold uppercase rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                          Dispatched
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-1 text-[10px] font-extrabold uppercase rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                          Scheduled
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Title Input */}
               <div>
