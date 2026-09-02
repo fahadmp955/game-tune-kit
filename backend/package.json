@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && ls -la dist/main.js",
     "start": "node dist/main",
     "start:dev": "tsc -w -p tsconfig.build.json",
     "test": "vitest run",
