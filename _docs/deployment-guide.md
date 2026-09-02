@@ -68,7 +68,7 @@ The backend is configured to run as a Web Service on Render.
    * **Region:** Same region as your Supabase DB (e.g. Oregon US-West or Frankfurt).
    * **Root Directory:** `backend`
    * **Runtime:** `Node`
-   * **Build Command:** `npm install && npm run build`
+   * **Build Command:** `npm install --include=dev && npm run build`
    * **Start Command:** `npm run start`
    * **Instance Type:** `Free`
 4. Add **Environment Variables**:
