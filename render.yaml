@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: gametune-kit-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: SWAGGER_ENABLED
+        value: true
+      - key: PUSH_MOCK_MODE
+        value: true
+      - key: LOG_LEVEL
+        value: info
+      - key: DATABASE_TYPE
+        value: postgres
+      - key: DB_SSL
+        value: true
+      - key: DATABASE_URL
+        sync: false # Set in Render Dashboard with your Supabase Connection URI

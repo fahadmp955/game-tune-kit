@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../utils/apiConfig';
 import {
   Send,
   Smartphone,
@@ -111,8 +112,8 @@ export const PnsDashboardPage: React.FC = () => {
     setTestResponse(null);
 
     try {
-      // Try local backend if running, otherwise use simulated sandbox response
-      const res = await fetch('http://localhost:3000/api/v1/campaigns/test-send', {
+      // Call backend if reachable, otherwise fall back to simulated sandbox response
+      const res = await fetch(`${API_BASE_URL}/campaigns/test-send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

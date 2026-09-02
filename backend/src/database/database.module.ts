@@ -8,21 +8,31 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
+        const databaseUrl = configService.get<string>('DATABASE_URL');
         const dbType = configService.get<string>('DATABASE_TYPE', 'sqlite');
 
-        if (dbType === 'postgres') {
+        // 1. Supabase / Cloud Managed PostgreSQL via DATABASE_URL
+        if (databaseUrl || dbType === 'postgres') {
           return {
             type: 'postgres',
-            host: configService.get<string>('DB_HOST', 'localhost'),
-            port: configService.get<number>('DB_PORT', 5432),
-            username: configService.get<string>('DB_USERNAME', 'postgres'),
-            password: configService.get<string>('DB_PASSWORD', 'postgres'),
-            database: configService.get<string>('DB_DATABASE', 'gametune_pns'),
+            ...(databaseUrl
+              ? { url: databaseUrl }
+              : {
+                  host: configService.get<string>('DB_HOST', 'localhost'),
+                  port: configService.get<number>('DB_PORT', 5432),
+                  username: configService.get<string>('DB_USERNAME', 'postgres'),
+                  password: configService.get<string>('DB_PASSWORD', 'postgres'),
+                  database: configService.get<string>('DB_DATABASE', 'postgres'),
+                }),
+            ssl: configService.get<string>('DB_SSL', 'true') === 'true'
+              ? { rejectUnauthorized: false }
+              : false,
             autoLoadEntities: true,
-            synchronize: true, // true for dev prototyping
+            synchronize: true, // Auto-sync table schema on startup
           };
         }
 
+        // 2. Local SQLite Fallback
         return {
           type: 'better-sqlite3',
           database: configService.get<string>('DATABASE_NAME', 'gametune_pns.sqlite'),
