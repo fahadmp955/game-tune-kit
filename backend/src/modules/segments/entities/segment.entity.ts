@@ -27,6 +27,9 @@ export class Segment {
   @Column({ type: 'simple-json', default: '[]' })
   rules: SegmentRule[];
 
+  @Column({ default: 0 })
+  cachedReach: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
