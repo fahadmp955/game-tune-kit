@@ -30,32 +30,40 @@ interface Cohort {
   rules: string[];
 }
 
+interface CampaignItem {
+  id: string;
+  name: string;
+  title: string;
+  body: string;
+  status: 'draft' | 'scheduled' | 'sent';
+  sentCount: number;
+  successCount: number;
+  failedCount: number;
+  createdAt: string;
+}
+
 export const PnsDashboardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'composer' | 'test-console' | 'cohorts' | 'analytics'>('composer');
   const [previewPlatform, setPreviewPlatform] = useState<'ios' | 'android'>('ios');
 
-  // Selected Game in Studio
-  const [availableGames, setAvailableGames] = useState<Game[]>([
-    {
-      id: '06298bc5-9a73-4936-9cda-b77ed22545fb',
-      name: 'Default Game Project',
-      bundleId: 'com.gametune.defaultgame',
-      apiKey: 'gtk_live_0d31c8e4912447eda5b822fe',
-    },
-    {
-      id: 'game_cyber_clash',
-      name: 'Cyber Clash 2088',
-      bundleId: 'com.studio.cyberclash',
-      apiKey: 'gtk_live_cyberclash_demo',
-    },
-  ]);
+  // Multi-Game Tenants (populated live from Supabase)
+  const [availableGames, setAvailableGames] = useState<Game[]>([]);
+  const [selectedGame, setSelectedGame] = useState<Game>({
+    id: 'loading',
+    name: 'Loading games...',
+    bundleId: 'loading',
+    apiKey: '',
+  });
 
-  const [selectedGame, setSelectedGame] = useState<Game>(availableGames[0]);
+  // Dynamic Cohorts & Campaigns State (100% API-driven)
+  const [cohorts, setCohorts] = useState<Cohort[]>([]);
+  const [campaigns, setCampaigns] = useState<CampaignItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Campaign Form State
   const [campaignTitle, setCampaignTitle] = useState('🎃 Double XP Weekend is LIVE!');
   const [campaignBody, setCampaignBody] = useState('Log in now and earn 2x EXP on all dungeon runs. Ends Sunday midnight!');
-  const [selectedCohort, setSelectedCohort] = useState('cohort_whales');
+  const [selectedCohort, setSelectedCohort] = useState('');
   const [respectQuietHours, setRespectQuietHours] = useState(true);
   const [deepLinkScreen, setDeepLinkScreen] = useState('dungeon_hub');
   const [isSending, setIsSending] = useState(false);
@@ -69,11 +77,54 @@ export const PnsDashboardPage: React.FC = () => {
   const [isSubscribingWeb, setIsSubscribingWeb] = useState(false);
   const [webPushStatus, setWebPushStatus] = useState<string | null>(null);
 
-  // Initial Data Fetching from Live Backend
-  useEffect(() => {
-    console.log(`[PNS Studio] Initializing live connection to backend: ${API_BASE_URL}`);
+  // Fetch all cohorts and campaigns for a specific game
+  const fetchGameDetails = (game: Game) => {
+    setIsLoading(true);
+    const headers: Record<string, string> = {};
+    if (game.apiKey) {
+      headers['X-Game-Key'] = game.apiKey;
+    }
 
-    // 1. Fetch live games from Render
+    console.log(`[PNS Studio] Fetching live data for game: ${game.name} (${game.apiKey})`);
+
+    // 1. Fetch live segments
+    fetch(`${API_BASE_URL}/segments`, { headers })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: any[]) => {
+        if (Array.isArray(data)) {
+          const liveCohorts: Cohort[] = data.map((s) => ({
+            id: s.id,
+            name: s.name,
+            description: s.description || 'Live Segment',
+            estimatedReach: s.cachedReach || 0,
+            rules: Array.isArray(s.rules)
+              ? s.rules.map((r: any) => `${r.field} ${r.operator} ${r.value}`)
+              : ['device.isActive == true'],
+          }));
+          setCohorts(liveCohorts);
+          if (liveCohorts.length > 0) {
+            setSelectedCohort(liveCohorts[0].id);
+          }
+        }
+      })
+      .catch((err) => console.warn('[PNS Studio] Segments fetch error:', err));
+
+    // 2. Fetch live campaigns
+    fetch(`${API_BASE_URL}/campaigns`, { headers })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: any[]) => {
+        if (Array.isArray(data)) {
+          setCampaigns(data);
+        }
+      })
+      .catch((err) => console.warn('[PNS Studio] Campaigns fetch error:', err))
+      .finally(() => setIsLoading(false));
+  };
+
+  // Initial Load: Fetch Games from Backend
+  useEffect(() => {
+    console.log(`[PNS Studio] Initializing connection to backend: ${API_BASE_URL}`);
+
     fetch(`${API_BASE_URL}/games`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data: any[]) => {
@@ -86,30 +137,10 @@ export const PnsDashboardPage: React.FC = () => {
           }));
           setAvailableGames(gameList);
           setSelectedGame(gameList[0]);
-          console.log(`[PNS Studio] Loaded ${gameList.length} game tenant(s) from Supabase:`, gameList);
+          fetchGameDetails(gameList[0]);
         }
       })
       .catch((err) => console.warn('[PNS Studio] Games fetch error:', err));
-
-    // 2. Fetch live segments from Render
-    fetch(`${API_BASE_URL}/segments`)
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data: any[]) => {
-        if (Array.isArray(data) && data.length > 0) {
-          const liveCohorts: Cohort[] = data.map((s) => ({
-            id: s.id,
-            name: s.name,
-            description: s.description || 'Custom database cohort',
-            estimatedReach: s.cachedReach || 0,
-            rules: Array.isArray(s.rules)
-              ? s.rules.map((r: any) => `${r.field} ${r.operator} ${r.value}`)
-              : ['device.isActive == true'],
-          }));
-          setCohorts((prev) => [...liveCohorts, ...prev]);
-          console.log(`[PNS Studio] Loaded ${liveCohorts.length} live cohort(s) from Supabase`);
-        }
-      })
-      .catch((err) => console.warn('[PNS Studio] Segments fetch error:', err));
   }, []);
 
   const handleRegisterBrowserWebPush = async () => {
@@ -129,38 +160,6 @@ export const PnsDashboardPage: React.FC = () => {
       setWebPushStatus(`⚠️ Subscription failed: ${result.error || 'Permission denied'}`);
     }
   };
-
-  // Cohorts List
-  const [cohorts, setCohorts] = useState<Cohort[]>([
-    {
-      id: 'cohort_all',
-      name: 'All Active Players',
-      description: 'Every deliverable device with active push token',
-      estimatedReach: 48200,
-      rules: ['device.isActive == true'],
-    },
-    {
-      id: 'cohort_whales',
-      name: 'Whales & High VIPs ($100+)',
-      description: 'High-value spenders with lifetime spend >= $100',
-      estimatedReach: 2450,
-      rules: ['attributes.lifetimeSpend >= 100'],
-    },
-    {
-      id: 'cohort_lapsed_d7',
-      name: 'Lapsed Players (7+ Days)',
-      description: 'Players who have not logged in for 7 to 14 days',
-      estimatedReach: 6890,
-      rules: ['attributes.daysInactive >= 7', 'attributes.daysInactive <= 14'],
-    },
-    {
-      id: 'cohort_starter_converts',
-      name: 'Engaged Non-Payers (Minnows)',
-      description: 'Level 15+ players with $0 lifetime spend (prime for 80% discount)',
-      estimatedReach: 14200,
-      rules: ['attributes.level >= 15', 'attributes.lifetimeSpend == 0'],
-    },
-  ]);
 
   // New Cohort Modal State
   const [isCohortModalOpen, setIsCohortModalOpen] = useState(false);
@@ -201,6 +200,7 @@ export const PnsDashboardPage: React.FC = () => {
         setStatusMessage(
           `✓ Dispatched campaign "${campaign.name}" to ${targetCohort?.name || 'All Players'} (~${targetCohort?.estimatedReach.toLocaleString()} devices). Quiet Hours & Frequency Caps enforced.`,
         );
+        fetchGameDetails(selectedGame);
       } else {
         throw new Error(`Server returned ${res.status}`);
       }
@@ -301,20 +301,40 @@ export const PnsDashboardPage: React.FC = () => {
   };
 
   // Add Cohort
-  const handleSaveNewCohort = (e: React.FormEvent) => {
+  // Add Cohort via Live API
+  const handleSaveNewCohort = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCohortName.trim()) return;
 
-    const newCohort: Cohort = {
-      id: `cohort_${Date.now()}`,
-      name: newCohortName.trim(),
-      description: newCohortDesc.trim() || 'Custom user-defined segment',
-      estimatedReach: Math.floor(Math.random() * 8000) + 500,
-      rules: [`${newCohortField} ${newCohortOp} ${newCohortVal}`],
-    };
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (selectedGame?.apiKey) {
+      headers['X-Game-Key'] = selectedGame.apiKey;
+    }
 
-    setCohorts([newCohort, ...cohorts]);
-    setSelectedCohort(newCohort.id);
+    try {
+      const res = await fetch(`${API_BASE_URL}/segments`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          name: newCohortName.trim(),
+          description: newCohortDesc.trim() || 'Custom user-defined segment',
+          rules: [
+            {
+              field: newCohortField,
+              operator: newCohortOp,
+              value: isNaN(Number(newCohortVal)) ? newCohortVal : Number(newCohortVal),
+            },
+          ],
+        }),
+      });
+
+      if (res.ok) {
+        fetchGameDetails(selectedGame);
+      }
+    } catch (err) {
+      console.warn('[PNS Studio] Failed to save segment:', err);
+    }
+
     setIsCohortModalOpen(false);
     setNewCohortName('');
     setNewCohortDesc('');
@@ -349,7 +369,10 @@ export const PnsDashboardPage: React.FC = () => {
             value={selectedGame.id}
             onChange={(e) => {
               const found = availableGames.find((g) => g.id === e.target.value);
-              if (found) setSelectedGame(found);
+              if (found) {
+                setSelectedGame(found);
+                fetchGameDetails(found);
+              }
             }}
             className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-bold rounded-xl px-3 py-2 text-slate-800 dark:text-white outline-none cursor-pointer"
           >
@@ -808,24 +831,96 @@ export const PnsDashboardPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="glass-panel p-5 rounded-2xl">
               <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Total Notifications Sent</span>
-              <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">128,490</div>
-              <span className="text-[11px] text-emerald-500 font-semibold">↑ 14% vs last month</span>
+              <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+                {campaigns.reduce((sum, c) => sum + (c.sentCount || 0), 0).toLocaleString()}
+              </div>
+              <span className="text-[11px] text-emerald-500 font-semibold">Live from Supabase</span>
             </div>
             <div className="glass-panel p-5 rounded-2xl">
               <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Delivery Success Rate</span>
-              <div className="text-2xl font-extrabold text-emerald-500 mt-1">99.4%</div>
-              <span className="text-[11px] text-slate-400 font-semibold">0.6% bounced / uninstalled</span>
+              <div className="text-2xl font-extrabold text-emerald-500 mt-1">
+                {campaigns.length > 0 && campaigns.reduce((sum, c) => sum + (c.sentCount || 0), 0) > 0
+                  ? (
+                      (campaigns.reduce((sum, c) => sum + (c.successCount || 0), 0) /
+                        campaigns.reduce((sum, c) => sum + (c.sentCount || 0), 0)) *
+                      100
+                    ).toFixed(1) + '%'
+                  : '100%'}
+              </div>
+              <span className="text-[11px] text-slate-400 font-semibold">Gateway verified</span>
             </div>
             <div className="glass-panel p-5 rounded-2xl">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Open / Tap-Through Rate</span>
-              <div className="text-2xl font-extrabold text-indigo-500 mt-1">8.2%</div>
-              <span className="text-[11px] text-slate-400 font-semibold">Top game industry benchmark</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Campaigns Executed</span>
+              <div className="text-2xl font-extrabold text-indigo-500 mt-1">{campaigns.length}</div>
+              <span className="text-[11px] text-slate-400 font-semibold">For {selectedGame.name}</span>
             </div>
             <div className="glass-panel p-5 rounded-2xl">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Dead Tokens Pruned</span>
-              <div className="text-2xl font-extrabold text-amber-500 mt-1">1,248</div>
-              <span className="text-[11px] text-slate-400 font-semibold">Auto-cleaned on 410 / Unregistered</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Registered Cohorts</span>
+              <div className="text-2xl font-extrabold text-amber-500 mt-1">{cohorts.length}</div>
+              <span className="text-[11px] text-slate-400 font-semibold">Dynamic player segments</span>
             </div>
+          </div>
+
+          {/* Historical Campaigns Table */}
+          <div className="glass-panel p-6 rounded-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">Historical Campaigns Log</h3>
+                <p className="text-xs text-slate-500">Live API sync • {selectedGame.name}</p>
+              </div>
+              <button
+                onClick={() => fetchGameDetails(selectedGame)}
+                className="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+              >
+                ↻ Refresh Live Log
+              </button>
+            </div>
+
+            {campaigns.length === 0 ? (
+              <div className="p-8 text-center text-xs text-slate-400">
+                {isLoading ? 'Loading campaigns from Supabase...' : 'No campaigns dispatched yet for this game.'}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px]">
+                      <th className="py-2.5 px-3">Campaign Name</th>
+                      <th className="py-2.5 px-3">Status</th>
+                      <th className="py-2.5 px-3">Sent</th>
+                      <th className="py-2.5 px-3">Delivered</th>
+                      <th className="py-2.5 px-3">Failed</th>
+                      <th className="py-2.5 px-3">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                    {campaigns.map((c) => (
+                      <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
+                        <td className="py-3 px-3 font-semibold text-slate-900 dark:text-white">
+                          <div>{c.name}</div>
+                          <div className="text-[11px] font-normal text-slate-400">{c.title}</div>
+                        </td>
+                        <td className="py-3 px-3">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+                              c.status === 'sent'
+                                ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                                : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                            }`}
+                          >
+                            {c.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 font-mono">{c.sentCount?.toLocaleString() || 0}</td>
+                        <td className="py-3 px-3 font-mono text-emerald-500">{c.successCount?.toLocaleString() || 0}</td>
+                        <td className="py-3 px-3 font-mono text-rose-400">{c.failedCount?.toLocaleString() || 0}</td>
+                        <td className="py-3 px-3 text-slate-400">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : 'Recent'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}
