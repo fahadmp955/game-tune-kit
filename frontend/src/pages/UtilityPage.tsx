@@ -258,7 +258,9 @@ export const UtilityPage: React.FC<UtilityPageProps> = ({ utilityId, onBackToCat
       </div>
 
       {/* Calculator Workspace Body */}
-      {renderCalculatorView()}
+      <div key={`${utilityId}-${Object.keys(currentInputs).length > 0 ? JSON.stringify(currentInputs) : 'default'}`}>
+        {renderCalculatorView()}
+      </div>
 
       {/* Share & Preset Modal */}
       <ShareModal

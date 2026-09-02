@@ -3,6 +3,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { Header } from './components/common/Header';
 import { CatalogPage } from './pages/CatalogPage';
 import { UtilityPage } from './pages/UtilityPage';
+import { getUtilityIdFromUrl } from './utils/stateSerializer';
 
 export const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<'catalog' | 'utility'>('catalog');
@@ -11,10 +12,9 @@ export const App: React.FC = () => {
 
   // Check URL on load for direct utility links or encoded state
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const utilParam = urlParams.get('util');
-    if (utilParam) {
-      setSelectedUtilityId(utilParam);
+    const targetUtilId = getUtilityIdFromUrl();
+    if (targetUtilId) {
+      setSelectedUtilityId(targetUtilId);
       setCurrentView('utility');
     }
   }, []);
