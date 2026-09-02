@@ -3,15 +3,23 @@ import { ThemeProvider } from './context/ThemeContext';
 import { Header } from './components/common/Header';
 import { CatalogPage } from './pages/CatalogPage';
 import { UtilityPage } from './pages/UtilityPage';
+import { PnsDashboardPage } from './pages/PnsDashboardPage';
 import { getUtilityIdFromUrl } from './utils/stateSerializer';
 
 export const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<'catalog' | 'utility'>('catalog');
+  const [currentView, setCurrentView] = useState<'catalog' | 'utility' | 'pns'>('catalog');
   const [selectedUtilityId, setSelectedUtilityId] = useState<string>('01-ltv-calculator');
   const [selectedFamily, setSelectedFamily] = useState<string>('all');
 
   // Check URL on load for direct utility links or encoded state
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const viewParam = urlParams.get('view');
+    if (viewParam === 'pns') {
+      setCurrentView('pns');
+      return;
+    }
+
     const targetUtilId = getUtilityIdFromUrl();
     if (targetUtilId) {
       setSelectedUtilityId(targetUtilId);
@@ -24,6 +32,7 @@ export const App: React.FC = () => {
     setCurrentView('utility');
     const url = new URL(window.location.href);
     url.searchParams.set('util', utilityId);
+    url.searchParams.delete('view');
     window.history.pushState({}, '', url.toString());
   };
 
@@ -32,6 +41,15 @@ export const App: React.FC = () => {
     const url = new URL(window.location.href);
     url.searchParams.delete('util');
     url.searchParams.delete('state');
+    url.searchParams.delete('view');
+    window.history.pushState({}, '', url.toString());
+  };
+
+  const handleNavigateToPns = () => {
+    setCurrentView('pns');
+    const url = new URL(window.location.href);
+    url.searchParams.delete('util');
+    url.searchParams.set('view', 'pns');
     window.history.pushState({}, '', url.toString());
   };
 
@@ -41,25 +59,28 @@ export const App: React.FC = () => {
         <Header
           currentView={currentView}
           onNavigate={(view) => {
-            if (view === 'catalog') handleBackToCatalog();
+            if (view === 'pns') handleNavigateToPns();
+            else handleBackToCatalog();
           }}
           selectedFamily={selectedFamily}
           onSelectFamily={setSelectedFamily}
         />
 
         <main className="flex-1">
-          {currentView === 'catalog' ? (
+          {currentView === 'catalog' && (
             <CatalogPage
               onSelectUtility={handleSelectUtility}
               selectedFamily={selectedFamily}
               onSelectFamily={setSelectedFamily}
             />
-          ) : (
+          )}
+          {currentView === 'utility' && (
             <UtilityPage
               utilityId={selectedUtilityId}
               onBackToCatalog={handleBackToCatalog}
             />
           )}
+          {currentView === 'pns' && <PnsDashboardPage />}
         </main>
 
         <footer className="border-t border-slate-200 dark:border-slate-800/80 bg-white/50 dark:bg-[#0b0f19]/50 py-6 mt-12 transition-colors">

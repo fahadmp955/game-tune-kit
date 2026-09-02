@@ -77,15 +77,31 @@ export const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, selecte
 
           {/* Right Action Items */}
           <div className="flex items-center space-x-3">
-            {currentView !== 'catalog' && (
+            {/* Mode Switcher */}
+            <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => onNavigate('catalog')}
-                className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors border border-slate-200 dark:border-slate-700/50"
+                className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                  currentView === 'catalog' || currentView === 'utility'
+                    ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-white shadow-sm'
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                }`}
               >
-                <LayoutGrid className="w-3.5 h-3.5 text-indigo-500" />
-                <span>All Utilities</span>
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span>Calculators</span>
               </button>
-            )}
+              <button
+                onClick={() => onNavigate('pns')}
+                className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                  currentView === 'pns'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>PNS Studio</span>
+              </button>
+            </div>
 
             {/* Theme Toggle Button */}
             <button
