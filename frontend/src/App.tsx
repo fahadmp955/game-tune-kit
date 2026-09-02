@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
+import { StudioProvider } from './context/StudioContext';
 import { Header } from './components/common/Header';
 import { CatalogPage } from './pages/CatalogPage';
 import { UtilityPage } from './pages/UtilityPage';
@@ -55,7 +56,8 @@ export const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
+      <StudioProvider>
+        <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
         <Header
           currentView={currentView}
           onNavigate={(view) => {
@@ -92,6 +94,7 @@ export const App: React.FC = () => {
           </div>
         </footer>
       </div>
+      </StudioProvider>
     </ThemeProvider>
   );
 };

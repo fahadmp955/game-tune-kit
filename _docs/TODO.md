@@ -60,15 +60,19 @@ This document tracks completed milestones, active deliverables, and future archi
 
 ---
 
+### Phase 7: PNS $\longleftrightarrow$ Calculators Synchronization
+- [x] Create shared `StudioContext` and `StudioProvider` for centralized multi-game and cohort caching.
+- [x] Connect PNS cohort audience sizes (`cachedReach`) to LTV & Revenue projection engines via `StudioCohortSelector`.
+- [x] Implement live audience revenue forecast banner inside `LtvCalculatorView` and `OfferCalculatorView`.
+- [x] Pure mathematical engine functions in `pnsCampaignSync.ts` for open rate, buyer conversions, and retention lift.
+- [x] Built interactive `CampaignImpactSimulator` directly inside the PNS Campaign Composer with 1-click deep links.
+- [x] Automated Vitest unit and integration suites passing with 100% assertions.
+
+---
+
 ## 🚀 Active & Planned Roadmap
 
-### Phase 7: PNS $\longleftrightarrow$ Calculators Synchronization — [ACTIVE NEXT]
-- [ ] Connect PNS cohort audience sizes (`cachedReach`) to LTV & Revenue projection engines.
-- [ ] Connect lapsed player re-engagement campaigns (`daysInactive >= 7`) with Retention curve decay models.
-- [ ] Connect guild / social broadcast campaigns with Virality & K-Factor multiplier loops.
-- [ ] Build shared campaign revenue impact predictor directly inside the PNS Composer.
-
-### Phase 8: Mobile Client SDK & Companion App (Unity, React Native, Swift/Kotlin)
+### Phase 8: Mobile Client SDK & Companion App (Unity, React Native, Swift/Kotlin) — [ACTIVE NEXT]
 - [ ] Drop-in SDK contract & documentation tab in PNS Studio (Unity C#, React Native, Flutter, Swift, Kotlin).
 - [ ] Lightweight React Native / Expo companion demo app with push registration.
 - [ ] Deep-link routing test inside mobile companion client.

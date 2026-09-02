@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../utils/apiConfig';
 import { subscribeToWebPush } from '../utils/webPushManager';
+import { CampaignImpactSimulator } from '../components/pns/CampaignImpactSimulator';
 import {
   Send,
   Smartphone,
@@ -479,8 +480,9 @@ export const PnsDashboardPage: React.FC = () => {
 
       {/* 1. CAMPAIGN COMPOSER & SIMULATOR */}
       {activeTab === 'composer' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Form Controls */}
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Left Form Controls */}
           <div className="lg:col-span-7 space-y-6">
             <div className="glass-panel p-6 rounded-2xl space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
@@ -742,7 +744,16 @@ export const PnsDashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+
+        {/* Phase 7: Campaign Impact & Revenue Simulator */}
+        <CampaignImpactSimulator
+          cohortName={cohorts.find((c) => c.id === selectedCohort)?.name || 'Target Cohort'}
+          targetReach={cohorts.find((c) => c.id === selectedCohort)?.estimatedReach || 2450}
+          campaignTitle={campaignTitle}
+          deepLinkScreen={deepLinkScreen}
+        />
+      </div>
+    )}
 
       {/* 2. INSTANT TEST CONSOLE */}
       {activeTab === 'test-console' && (

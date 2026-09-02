@@ -1,9 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { LtvInputs } from '../../types';
 import { calculateLtv } from '../../engine/ltvCalculator';
+import { mapCohortToLtvAssumptions } from '../../engine/pnsCampaignSync';
 import { SliderInput } from '../common/SliderInput';
 import { KpiCard } from '../common/KpiCard';
 import { FaqAccordion } from '../common/FaqAccordion';
+import { StudioCohortSelector } from '../common/StudioCohortSelector';
+import { Cohort } from '../../context/StudioContext';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
 interface LtvCalculatorViewProps {
@@ -20,13 +23,40 @@ export const LtvCalculatorView: React.FC<LtvCalculatorViewProps> = ({ initialInp
     horizonDays: initialInputs?.horizonDays ?? 180,
   });
 
+  const [connectedCohort, setConnectedCohort] = useState<Cohort | null>(null);
+
   const updateInput = <K extends keyof LtvInputs>(key: K, val: LtvInputs[K]) => {
     const updated = { ...inputs, [key]: val };
     setInputs(updated);
     onInputsChange(updated);
   };
 
+  const handleSelectStudioCohort = (cohort: Cohort) => {
+    setConnectedCohort(cohort);
+    const assumptions = mapCohortToLtvAssumptions(cohort.name, cohort.estimatedReach);
+    const updated: LtvInputs = {
+      d1Retention: assumptions.d1Retention ?? inputs.d1Retention,
+      d7Retention: assumptions.d7Retention ?? inputs.d7Retention,
+      d30Retention: assumptions.d30Retention ?? inputs.d30Retention,
+      dailyArpu: assumptions.dailyArpu ?? inputs.dailyArpu,
+      horizonDays: assumptions.horizonDays ?? inputs.horizonDays,
+    };
+    setInputs(updated);
+    onInputsChange(updated);
+  };
+
+  const handleDisconnectStudioCohort = () => {
+    setConnectedCohort(null);
+  };
+
   const results = useMemo(() => calculateLtv(inputs), [inputs]);
+
+  const projectedCohortTotalRevenue = useMemo(() => {
+    if (!connectedCohort?.estimatedReach) return null;
+    return (results.estimatedLtv * connectedCohort.estimatedReach).toLocaleString('en-US', {
+      maximumFractionDigits: 0,
+    });
+  }, [results.estimatedLtv, connectedCohort]);
 
   const presetBenchmarks = [
     { label: 'Casual Game', d1: 42, d7: 16, d30: 6, arpu: 0.08 },
@@ -52,6 +82,15 @@ export const LtvCalculatorView: React.FC<LtvCalculatorViewProps> = ({ initialInp
 
   return (
     <div className="space-y-6">
+      {/* Studio Cohort Ingestion (Layer 1/2 Sync) */}
+      <StudioCohortSelector
+        activeCohortName={connectedCohort?.name}
+        activeReach={connectedCohort?.estimatedReach}
+        onSelectCohort={handleSelectStudioCohort}
+        onDisconnect={handleDisconnectStudioCohort}
+        calculatorName="LTV Simulator"
+      />
+
       {/* Top Benchmark Selector */}
       <div className="glass-panel rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
         <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
@@ -154,6 +193,28 @@ export const LtvCalculatorView: React.FC<LtvCalculatorViewProps> = ({ initialInp
 
         {/* Right Results & Visualizations (7 Cols) */}
         <div className="lg:col-span-7 space-y-6">
+          {/* Live PNS Cohort Revenue Forecast Banner */}
+          {connectedCohort && projectedCohortTotalRevenue && (
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-emerald-500/20 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">
+                  PNS Segment Audience Revenue Forecast
+                </span>
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  Projected revenue for <strong className="text-slate-900 dark:text-white">{connectedCohort.name}</strong> ({connectedCohort.estimatedReach.toLocaleString()} players) over {inputs.horizonDays} days
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                  ${projectedCohortTotalRevenue}
+                </span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
+                  @ ${results.estimatedLtv} / player
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* KPI Summary Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
             <KpiCard

@@ -4,6 +4,8 @@ import { calculateOffer } from '../../engine/offerCalculator';
 import { SliderInput } from '../common/SliderInput';
 import { KpiCard } from '../common/KpiCard';
 import { FaqAccordion } from '../common/FaqAccordion';
+import { StudioCohortSelector } from '../common/StudioCohortSelector';
+import { Cohort } from '../../context/StudioContext';
 
 interface OfferCalculatorViewProps {
   initialInputs?: Partial<OfferInputs>;
@@ -18,6 +20,8 @@ export const OfferCalculatorView: React.FC<OfferCalculatorViewProps> = ({ initia
     offerPackagePrice: initialInputs?.offerPackagePrice ?? 9.99,
   });
 
+  const [connectedCohort, setConnectedCohort] = useState<Cohort | null>(null);
+
   const updateInput = <K extends keyof OfferInputs>(key: K, val: OfferInputs[K]) => {
     const updated = { ...inputs, [key]: val };
     setInputs(updated);
@@ -25,6 +29,14 @@ export const OfferCalculatorView: React.FC<OfferCalculatorViewProps> = ({ initia
   };
 
   const results = useMemo(() => calculateOffer(inputs), [inputs]);
+
+  const cohortProjectedSales = useMemo(() => {
+    if (!connectedCohort?.estimatedReach) return null;
+    const reach = connectedCohort.estimatedReach;
+    const estimatedBuyers = Math.round(reach * 0.048); // ~4.8% typical conversion
+    const grossRevenue = (estimatedBuyers * inputs.offerPackagePrice).toFixed(2);
+    return { estimatedBuyers, grossRevenue };
+  }, [connectedCohort, inputs.offerPackagePrice]);
 
   const faqItems = [
     {
@@ -39,6 +51,35 @@ export const OfferCalculatorView: React.FC<OfferCalculatorViewProps> = ({ initia
 
   return (
     <div className="space-y-6">
+      {/* Studio Cohort Ingestion */}
+      <StudioCohortSelector
+        activeCohortName={connectedCohort?.name}
+        activeReach={connectedCohort?.estimatedReach}
+        onSelectCohort={(cohort) => setConnectedCohort(cohort)}
+        onDisconnect={() => setConnectedCohort(null)}
+        calculatorName="Offer Discount Calculator"
+      />
+
+      {connectedCohort && cohortProjectedSales && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-indigo-500/10 border border-amber-500/20 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
+              Push Offer Campaign Projection for {connectedCohort.name}
+            </span>
+            <p className="text-xs text-slate-600 dark:text-slate-300">
+              Target reach: {connectedCohort.estimatedReach.toLocaleString()} players • Estimated ~{cohortProjectedSales.estimatedBuyers.toLocaleString()} conversions (4.8% baseline)
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">
+              ${Number(cohortProjectedSales.grossRevenue).toLocaleString()}
+            </span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
+              @ ${inputs.offerPackagePrice} / pack
+            </span>
+          </div>
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-5 space-y-4 glass-panel rounded-2xl p-5 sm:p-6">
           <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-200 dark:border-slate-800 pb-3">
