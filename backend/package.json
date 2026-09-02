@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -p tsconfig.build.json && ls -la dist/main.js",
-    "start": "node dist/main",
+    "start": "node --experimental-require-module dist/main",
     "start:dev": "tsc -w -p tsconfig.build.json",
     "test": "vitest run",
     "lint": "tsc --noEmit"
