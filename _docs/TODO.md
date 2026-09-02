@@ -40,26 +40,36 @@ This document tracks completed milestones, active deliverables, and future archi
 - [x] NestJS 11 LTS migration ensuring native CommonJS compatibility, 0 stack overflows, and 0 vulnerabilities.
 - [x] Cloudflare Pages frontend configured with dynamic `API_BASE_URL` defaulting to Render backend.
 
----
-
 ### Phase 5: Web Push Notifications (W3C Push API & VAPID)
 - [x] VAPID key generation (`web-push` standard) and public key distribution endpoint (`GET /api/v1/web-push/public-key`).
 - [x] Dedicated `WebPushAdapter` implementing `NotificationPushPort` in backend.
 - [x] Client Service Worker (`sw.js`) to intercept push events, show system notifications, and handle notification clicks.
 - [x] Frontend 1-Click "Enable Web Push on This Browser" button in PNS Studio to register real browser endpoints and test live delivery.
+- [x] Direct native macOS desktop notification banner fallback.
 - [x] Automated backend Vitest test suite (`backend/test/webpush.test.ts`) passing (8/8 tests).
+
+### Phase 6: Multi-Tenant Database Seeding & 100% API Dashboard
+- [x] Seeded 4 studio game tenants in Supabase PostgreSQL (`Cyber Clash 2088`, `Puzzle Quest Saga`, `Realm of Legends RPG`, `Default Game Project`).
+- [x] Added `cachedReach` column to `segments` table and populated reach estimates.
+- [x] Seeded historical dispatched campaigns and multi-platform player devices in database.
+- [x] Converted PNS Studio frontend to 100% dynamic API calls:
+  - Zero hardcoded fallback arrays.
+  - Multi-tenant switcher fetching game-isolated segments and campaigns via `X-Game-Key`.
+  - Added **Campaign Preset / Saved Template Selector** in Campaign Composer.
+  - Dynamic KPI cards and historical campaigns log table.
 
 ---
 
 ## 🚀 Active & Planned Roadmap
 
-### Phase 6: Mobile Client SDK & Companion App (Unity, React Native, Swift/Kotlin) — [ACTIVE NEXT]
+### Phase 7: PNS $\longleftrightarrow$ Calculators Synchronization — [ACTIVE NEXT]
+- [ ] Connect PNS cohort audience sizes (`cachedReach`) to LTV & Revenue projection engines.
+- [ ] Connect lapsed player re-engagement campaigns (`daysInactive >= 7`) with Retention curve decay models.
+- [ ] Connect guild / social broadcast campaigns with Virality & K-Factor multiplier loops.
+- [ ] Build shared campaign revenue impact predictor directly inside the PNS Composer.
+
+### Phase 8: Mobile Client SDK & Companion App (Unity, React Native, Swift/Kotlin)
 - [ ] Drop-in SDK contract & documentation tab in PNS Studio (Unity C#, React Native, Flutter, Swift, Kotlin).
 - [ ] Lightweight React Native / Expo companion demo app with push registration.
 - [ ] Deep-link routing test inside mobile companion client.
 - [ ] Implement `RemoteConfigModule` in backend to serve dynamic configuration JSON per game.
-- [ ] Connect Remote Config to PNS Cohorts.
-
-### Phase 7: LiveOps Calendar & Event Orchestration (Layer 4)
-- [ ] Unified LiveOps Event Calendar in Studio Dashboard.
-- [ ] Automatic PNS campaign scheduling synced with event launch.
